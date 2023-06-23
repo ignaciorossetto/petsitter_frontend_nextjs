@@ -14,7 +14,7 @@ const NavBar = () => {
         <div className='sm:hidden cursor-pointer hover:scale-110' onClick={()=> setShowNavBarModal(prev=> !prev)}>
             <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
         </div>
-        <h1 className='flex gap-2 items-center justify-center text font-semibold  text-xl md:text-2xl tracking-widest cursor-pointer text-orange-400'>
+        <h1 className='flex gap-2 items-center justify-center text font-semibold  text-xl md:text-2xl tracking-widest cursor-pointer text-orange-800'>
             <Link href='/'>
                 PetSitterFinder 
             </Link>
@@ -35,8 +35,8 @@ const NavBar = () => {
                 <h1 className=' text-center text-xl font-semibold mt-4'>MENU</h1>
                 </div>
                 <div className='pb-5 '>
-                    <h3 className='font-normal hover:scale-105 cursor-pointer'><Link href='/login'>Login</Link></h3>
-                    <h3 className='font-normal hover:scale-105 cursor-pointer'><Link href='/sign-up'>Sign up</Link></h3>
+                <Link href='/login'><h3 className='font-normal hover:scale-105 cursor-pointer'>Login</h3></Link>
+                <Link href='/sign-up'><h3 className='font-normal hover:scale-105 cursor-pointer'>Sign up</h3></Link>
                 <div className='text-xs mt-5'>
                 <p className='text-center'>
                 © 2023 
