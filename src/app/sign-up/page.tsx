@@ -52,7 +52,7 @@ const SignUpView = () => {
   }
 
   const {isLoaded} = useLoadScript({
-    googleMapsApiKey: 'AIzaSyB4ekF8z5DdHvp9EZtac7_I5cPqU2QPhqM',
+    googleMapsApiKey: process.env.GOOGLE_MAP_API_KEY!,
     libraries: ['places'],
 })
 
