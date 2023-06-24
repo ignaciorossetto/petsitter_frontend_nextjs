@@ -6,7 +6,13 @@ import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import {   useLoadScript } from "@react-google-maps/api";
 import AddressGoogleMapInput from '@/components/AddressGoogleMapInput';
-import axios from 'axios';
+import axios from 'axios'
+import Swal from 'sweetalert2';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSun } from '@fortawesome/free-regular-svg-icons';
+import { faHome, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import Link from 'next/link';
+
 
 
 interface Address {
@@ -37,22 +43,50 @@ interface Form {
 
 
 const SignUpView = () => {
-  const [signUpForm, setSignUpForm] = useState<Form>()
+  const [submittingForm, setSubmittingForm] = useState(false
+    )
+  const [submittedForm, setSubmittedForm] = useState(false)
+  const [email, setEmail] = useState<string>('')
   const signUpFormRef = useRef<HTMLFormElement>()
   const [address, setAddress] = useState()
   const router = useRouter()
-  const {register, handleSubmit, watch, reset, formState: { errors } } = useForm<Form>()
+  const {register, handleSubmit, watch, reset, setError, formState: { errors } } = useForm<Form>()
   const onSubmitHandler = async(values: Form) => {
     values.fullAddress = address!
     values.strategy = 'local'
-    const response = await axios.post('http:localhost:5000/api/auth/register', values)
-    console.log(response)
-    // reset(values);
-    // router.push('/login')
+    try {
+      setSubmittingForm(true)
+      const response = await axios.post('http://localhost:5000/api/auth/register', values)
+      if(response) {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          icon: 'success',
+          title: 'Registrado correctamente!'
+        });
+        setEmail(values.email)
+        reset(values);
+        setSubmittingForm(false)
+        setSubmittedForm(true)
+      }
+      
+    } catch (error:any) {
+      setSubmittingForm(false)
+      const errors = error.response.data
+      errors.email = ' '
+      if (errors.email) {
+        setError('email', {
+          type: "server",
+          message: errors.error,
+        });
+      }
+    }
   }
-
   const {isLoaded} = useLoadScript({
-    googleMapsApiKey: process.env.GOOGLE_MAP_API_KEY!,
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
     libraries: ['places'],
 })
 
@@ -70,8 +104,17 @@ const SignUpView = () => {
   return (
     <>
     <NavBar/>
-    <section className='flex flex-col items-center w-full bg-[url("/gradient.png")] bg-cover rounded-2xl min-h-[60vh] shadow-2xl'>
-      <form  className='flex flex-col gap-3 p-5 items-center sm:w-96' onSubmit={handleSubmit(onSubmitHandler)}>
+    <section className='flex flex-col items-center justify-center w-full bg-[url("/gradient.png")] bg-cover rounded-2xl min-h-[80vh] shadow-2xl'>
+      <FontAwesomeIcon className={`${!submittingForm && "hidden"} w-16 h-16`} icon={faSpinner} spin />
+      <div className={`${!submittedForm && 'hidden '} py-5 w-full flex flex-col justify-start`}>
+        <h1 className='text-3xl break-all font-semibold mb-5 text-center'>Felicitaciones!</h1>
+        <h3 className='hidden sm:block p-2 py-3 break-all break-normal xs:px-[10%] sm:px-[25%] lg:pl-[35%]  text-2xl'>Creaste tu cuenta exitosamente.</h3>
+        <h3 className='p-2 py-3 break-all xs:px-[10%] sm:px-[25%] lg:pl-[35%] text-xl sm:text-2xl'>Te enviamos un mail a <br /> <span className='font-bold'>{email}</span></h3>
+        <h3 className='p-2 py-3 break-all xs:px-[10%] sm:px-[25%] lg:pl-[35%] text-xl sm:text-2xl'> Hace click en el link para confirmarla.</h3>
+        <br />
+        <h3 className='p-2 text-center text-2xl font-semibold'>Ir a <Link href={'/'}><FontAwesomeIcon className='hover:scale-105 duration-200' icon={faHome}/></Link></h3>
+      </div>
+      <form  className={`${(submittingForm || submittedForm) && 'hidden'} flex flex-col gap-3 p-5 items-center sm:w-96`} onSubmit={handleSubmit(onSubmitHandler)}>
       <h1 className='text-5xl mb-2 text-center font-medium pt-5'>Registro</h1>
 
       <label className='font-medium w-full sm:w-96 self-start text-lg '>Nombre completo</label>

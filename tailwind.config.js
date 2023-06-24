@@ -20,6 +20,9 @@ module.exports = {
       },
       screens:{
         xs: "517px",
+      },
+      animation: {
+        'spin-slow': 'spin 3s linear infinite',
       }
     },
   },
