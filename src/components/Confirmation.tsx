@@ -20,7 +20,7 @@ const Confirmation = () => {
   const handleResendEmailBtn = async() => {
     const obj = {email: email}
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/resendConfirmationMail' , obj)
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/resendConfirmationMail` , obj)
       if (response) {
         setReSendMailTick(true)
         setReSendBtn(true)
@@ -42,7 +42,7 @@ const Confirmation = () => {
       };
       try {
         const response = await axios.post(
-          "http://localhost:5000/api/auth/checkAccount",
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/checkAccount`,
           obj
         );
         Swal.fire({

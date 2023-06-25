@@ -54,9 +54,11 @@ const SignUpView = () => {
   const onSubmitHandler = async(values: Form) => {
     values.fullAddress = address!
     values.strategy = 'local'
+    console.log(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register`)
     try {
       setSubmittingForm(true)
-      const response = await axios.post('http://localhost:5000/api/auth/register', values)
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register`, values)
+      
       if(response) {
         Swal.fire({
           toast: true,
@@ -76,7 +78,7 @@ const SignUpView = () => {
     } catch (error:any) {
       setSubmittingForm(false)
       const errors = error.response.data
-      errors.email = ' '
+      errors.email! = ''
       if (errors.email) {
         setError('email', {
           type: "server",
