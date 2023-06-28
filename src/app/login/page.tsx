@@ -1,8 +1,6 @@
 "use client"
 import NavBar from '@/components/NavBar'
-import GoogleIcon from '../../../public/icons8-google-1000.svg'
 import Footer from '@/components/Footer'
-import { FormEvent, useRef } from 'react'
 import LoginForm from '@/components/LoginForm'
 
 const loginView = () => {

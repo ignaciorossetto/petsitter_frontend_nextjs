@@ -20,11 +20,14 @@
     "@types/react-dom": "18.2.5",
     "autoprefixer": "10.4.14",
     "axios": "^1.4.0",
+    "date-fns": "^2.30.0",
     "eslint": "8.43.0",
     "eslint-config-next": "13.4.6",
+    "firebase": "^9.23.0",
     "next": "13.4.6",
     "postcss": "8.4.24",
     "react": "18.2.0",
+    "react-date-range": "^1.4.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.45.0",
     "sweetalert2": "^11.7.12",
@@ -33,6 +36,7 @@
     "use-places-autocomplete": "^4.0.0"
   },
   "devDependencies": {
-    "@svgr/webpack": "^8.0.1"
+    "@svgr/webpack": "^8.0.1",
+    "@types/react-date-range": "^1.4.4"
   }
 }

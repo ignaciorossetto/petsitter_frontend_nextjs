@@ -9,7 +9,6 @@ import AddressGoogleMapInput from '@/components/AddressGoogleMapInput';
 import axios from 'axios'
 import Swal from 'sweetalert2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSun } from '@fortawesome/free-regular-svg-icons';
 import { faHome, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 
@@ -54,7 +53,6 @@ const SignUpView = () => {
   const onSubmitHandler = async(values: Form) => {
     values.fullAddress = address!
     values.strategy = 'local'
-    console.log(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register`)
     try {
       setSubmittingForm(true)
       const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register`, values)

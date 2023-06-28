@@ -8,6 +8,23 @@ const nextConfig = {
       });
       return config;
     },
+    images:{
+      remotePatterns:[
+        {
+          protocol: 'https',
+          hostname: 'www.hartz.com',
+          port: ''
+        
+        },
+        {
+          protocol: 'https',
+          hostname: 'firebasestorage.googleapis.com',
+          port: ''
+        
+        },
+
+      ]
+    }
   };
   
   module.exports = nextConfig;
