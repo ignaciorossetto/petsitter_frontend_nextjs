@@ -25,8 +25,6 @@ export const UserContextProvider = ({children}: UserContextProviderType) => {
                 const response = await axios.get('http://localhost:5000/api/auth/checkauth', {withCredentials: true})
                 return true
             } catch (error) {
-                console.log(error)
-                console.log(user)
                 setUser(null)
                 document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; 
                 router.push('/error?code=1')

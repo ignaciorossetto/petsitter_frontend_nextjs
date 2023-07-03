@@ -91,7 +91,7 @@ const PetDashboard = () => {
                 <div className='absolute top-[-15px] right-[-5px] bg-white p-3 rounded-xl font-semibold shadow-xl '>{e.name}</div>
                 </div>
                 <div className='flex gap-5 justify-center'>
-                    <Link href={'#'}>
+                    <Link href={'/user/get-sitter'}>
                     <FontAwesomeIcon className='h-8 w-8 cursor-pointer hover:scale-105 duration-200' icon={faCalendarPlus}/>
                     </Link>
                     <Link href={'#'}>
