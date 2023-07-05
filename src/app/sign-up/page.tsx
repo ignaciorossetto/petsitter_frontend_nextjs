@@ -56,7 +56,7 @@ const SignUpView = () => {
     try {
       setSubmittingForm(true)
       const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register`, values)
-      
+      console.log(response)
       if(response) {
         Swal.fire({
           toast: true,
@@ -76,13 +76,10 @@ const SignUpView = () => {
     } catch (error:any) {
       setSubmittingForm(false)
       const errors = error.response.data
-      errors.email! = ''
-      if (errors.email) {
-        setError('email', {
-          type: "server",
-          message: errors.error,
-        });
-      }
+      setError('email', {
+        type: "server",
+        message: errors.error,
+      });
     }
   }
   const {isLoaded} = useLoadScript({

@@ -23,23 +23,23 @@ const LoginForm = () => {
       password: pswRef.current?.value,
     };
     try {
-      // const response = await axios.post(
-      //   `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`,
-      //   obj,
-      //   {
-      //     withCredentials: true
-      //   }
-      // );
       const response:any = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'content-type': 'application/json'
         },
         body: JSON.stringify(obj),
-        credentials: 'include'
+        credentials: 'include',
       })
-      
       const data = await response.json()
+      if(response.status === 401){
+        setError('Error en usuario/contraseña');
+        setLoading(false);
+        return
+      }
+      if(!data?.payload?.confirmedAccount){
+        return router.push('/error?code=3')
+      }
       setUser(data.payload);
       Swal.fire({
         toast: true,
@@ -48,12 +48,11 @@ const LoginForm = () => {
         timer: 3000,
         timerProgressBar: true,
         icon: "success",
-        title: `Bienvenido ${data.payload.username}!`,
+        title: `Bienvenido ${data?.payload?.username}!`,
       });
       router.push("/");
-      setLoading(false);
     } catch (error: any) {
-      setError(error.response.data.error);
+      setError(error?.message);
       setLoading(false);
     }
   };
