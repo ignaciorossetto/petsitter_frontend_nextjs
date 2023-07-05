@@ -23,12 +23,24 @@ const LoginForm = () => {
       password: pswRef.current?.value,
     };
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`,
-        obj,
-        { withCredentials: true}
-      );
-      setUser(response.data.payload);
+      // const response = await axios.post(
+      //   `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`,
+      //   obj,
+      //   {
+      //     withCredentials: true
+      //   }
+      // );
+      const response:any = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify(obj),
+        credentials: 'include'
+      })
+      
+      const data = await response.json()
+      setUser(data.payload);
       Swal.fire({
         toast: true,
         position: "top-end",
@@ -36,7 +48,7 @@ const LoginForm = () => {
         timer: 3000,
         timerProgressBar: true,
         icon: "success",
-        title: `Bienvenido ${response.data.payload.username}!`,
+        title: `Bienvenido ${data.payload.username}!`,
       });
       router.push("/");
       setLoading(false);
