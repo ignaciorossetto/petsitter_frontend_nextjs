@@ -105,7 +105,7 @@ const GetSitterView = () => {
     <>
     <NavBar/>
     <section id='bb'>
-        {!isLoaded && <FontAwesomeIcon icon={faSpinner} spin className='flex justify-center mt-20 h-16 w-full' />}
+        {!isLoaded && <FontAwesomeIcon icon={faSpinner} size='2xl' spin className='flex justify-center mt-20 h-16 w-full' />}
         {isLoaded && 
         <div className='h-full w-full flex flex-col-reverse sm:flex-row'>
             <div className='h-[400px] sm:h-[80vh] sm:w-[30%] bg-violet-200 overflow-scroll overflow-x-hidden mt-3 sm:mt-0 shadow-2xl'>

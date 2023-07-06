@@ -87,7 +87,7 @@ const Messenger = () => {
              <Conversation key={e._id} conv={e} selectedConv={selectedConv} setSelectedConv={setSelectedConv} sitterID={e?.members.filter((e:any)=> e !== user._id)}/>
         ) : 
         <div className='flex justify-center items-center'>
-            <FontAwesomeIcon icon={faSpinner} spin className='h-16 w-16 mt-20'/>
+            <FontAwesomeIcon icon={faSpinner} size='2xl' spin className='h-16 w-16 mt-20'/>
         </div>
     }
     </div>
@@ -101,7 +101,7 @@ const Messenger = () => {
             :
             <div className='flex mt-20 justify-center items-center'>
 
-            <FontAwesomeIcon icon={faSpinner} spin className='w-16 h-16'/>
+            <FontAwesomeIcon icon={faSpinner} size='2xl' spin className='w-16 h-16'/>
             </div>
         }
 
