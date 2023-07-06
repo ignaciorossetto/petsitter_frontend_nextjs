@@ -71,7 +71,7 @@ const PetDashboard = () => {
 
   return (
     <div className='min-h-[60vh] flex flex-col w-full '>
-        {loading && <FontAwesomeIcon className='p-16 h-16 w-16  self-center' icon={faSpinner} spin/> }
+        {loading && <FontAwesomeIcon size="2xl"  className='p-16 self-center' icon={faSpinner} spin/> }
         {!loading && 
             <div className='flex justify-center sm:justify-normal gap-5 p-3 mb-7'>
                 <Link href={'/user/pets/add'}>
@@ -92,13 +92,13 @@ const PetDashboard = () => {
                 </div>
                 <div className='flex gap-5 justify-center'>
                     <Link href={'/user/get-sitter'}>
-                    <FontAwesomeIcon className='h-8 w-8 cursor-pointer hover:scale-105 duration-200' icon={faCalendarPlus}/>
+                    <FontAwesomeIcon size="xl"  className='cursor-pointer hover:scale-105 duration-200' icon={faCalendarPlus}/>
                     </Link>
                     <Link href={'#'}>
-                    <FontAwesomeIcon className='h-8 w-8 cursor-pointer hover:scale-105 duration-200' icon={faShieldDog}/>
+                    <FontAwesomeIcon size="xl"  className='cursor-pointer hover:scale-105 duration-200' icon={faShieldDog}/>
                     </Link>
                     <div onClick={()=> handleDeletePetBtn(e._id)}>
-                    <FontAwesomeIcon className='h-8 w-8 cursor-pointer hover:scale-105 duration-200 text-red-500' icon={faTrashCan}/>
+                    <FontAwesomeIcon size="xl"  className='cursor-pointer hover:scale-105 duration-200 text-red-500' icon={faTrashCan}/>
                     </div>
                 </div>
             </div>

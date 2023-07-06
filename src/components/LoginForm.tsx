@@ -1,6 +1,5 @@
 import React, { FormEvent, useContext, useRef, useState } from "react";
 import GoogleIcon from "../../public/icons8-google-1000.svg";
-import axios from "axios";
 import { UserContext } from "@/hooks/auth/authContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -74,7 +73,8 @@ const LoginForm = () => {
         <h1 className="text-[35px] p-10">Login</h1>
         {loading && (
           <FontAwesomeIcon
-            className="w-16 h-[300px] justify-self-center "
+            size="2xl"
+            className="h-[300px] justify-self-center "
             icon={faSpinner}
             spin
           />
