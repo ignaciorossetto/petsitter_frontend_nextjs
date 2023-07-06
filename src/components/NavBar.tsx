@@ -115,7 +115,7 @@ const NavBar = () => {
               className="cursor-pointer
                 hover:scale-110 duration-200 bg-violet-300 p-3 rounded-lg"
             >
-              <Link href="#">
+              <Link href="/user/chat">
                 <FontAwesomeIcon size="xl" icon={faCommentDots} />
               </Link>
             </span>
@@ -135,7 +135,7 @@ const NavBar = () => {
                 className="cursor-pointer
                     hover:scale-110 duration-200 rounded-lg hover:shadow-2xl"
               >
-                <Link href="#">
+                <Link href="/user">
                   <Image
                     src={user?.profileImg}
                     alt="profile-image"
@@ -150,7 +150,7 @@ const NavBar = () => {
                 className="cursor-pointer
                     hover:scale-110 duration-200 bg-violet-300 p-3 rounded-lg"
               >
-                <Link href="/">
+                <Link href="/user">
                   <FontAwesomeIcon size="xl" icon={faUser} />
                 </Link>
               </span>
