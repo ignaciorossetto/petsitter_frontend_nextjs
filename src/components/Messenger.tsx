@@ -77,10 +77,10 @@ const Messenger = () => {
 
 
   return (
-    <section className='w-full h-[80vh] flex'>
-    <div className='w-[35%] h-full bg-violet-200 p-10 flex flex-col gap-4'>
-        <h1 className='text-2xl text-center font-medium mb-5'>Últimos chats</h1>
-
+    <section className='w-full h-[80vh] flex justify-center'>
+    <div className='w-[28%] sm:w-[35%] h-full bg-violet-200 py-3 sm:p-10 flex flex-col items-center gap-4'>
+        <h1 className='hidden sm:block text-2xl text-center font-medium mb-5'>Últimos chats</h1>
+        <h1 className='sm:hidden text-2xl text-center font-medium mb-5'>Chats</h1>
         {
          !loadingConversationsMenu ?
         conversationsArray?.map((e:any)=>
@@ -91,8 +91,8 @@ const Messenger = () => {
         </div>
     }
     </div>
-    <div className='w-[65%] bg-violet-300 p-10 flex flex-col gap-4'>
-        <div className='w-full h-[85%] bg-violet-100 rounded-2xl shadow-2xl flex flex-col overflow-scroll overflow-x-hidden'>
+    <div className='w-[65%] bg-violet-300 sm:p-10 flex flex-col gap-4'>
+        <div className='w-full h-[85%] bg-violet-100 sm:rounded-2xl shadow-2xl flex flex-col overflow-scroll overflow-x-hidden'>
 
         { !loadingMessages ? 
             messages?.map((element:any, index:any)=> 
@@ -106,10 +106,10 @@ const Messenger = () => {
         }
 
         </div>
-        <div className='w-full h-[15%] flex gap-3'>
-            <input value={msgBox} onChange={(e)=>setMsgBox(e.target.value)} type='text' name='message' className='w-[80%] bg-white rounded-2xl shadow-2xl p-5 text-lg font-medium'/>
-            <div onClick={handleSendMsg} className='flex w-[20%] h-full bg-lime-300/75 rounded-2xl shadow-2xl p-5 justify-center items-center hover:scale-110 duration-200 cursor-pointer'>
-                <FontAwesomeIcon icon={faPaw} className='text-orange-800 w-8 h-8'/>
+        <div className='w-full h-[15%] flex gap-3 relative'>
+            <input value={msgBox} placeholder='Escribe aqui....' onChange={(e)=>setMsgBox(e.target.value)} type='text' name='message' className='w-full sm:w-[80%] p-2 bg-white sm:rounded-2xl shadow-2xl sm:p-5 text-lg font-medium'  />
+            <div onClick={handleSendMsg} className='absolute top-5 right-0 sm:relative sm:top-auto sm:right-auto sm:flex w-[50px] sm:w-[20%] sm:h-full bg-lime-300/75 rounded-full mr-2 mb-2 sm:m-0 shadow-2xl p-2 sm:p-5 justify-center items-center hover:scale-105 sm:hover:scale-110 duration-200 cursor-pointer'>
+                <FontAwesomeIcon icon={faPaw} className='text-orange-800 w-8 h-8 absolut '/>
             </div>
         </div>
     </div>

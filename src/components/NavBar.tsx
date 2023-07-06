@@ -31,6 +31,15 @@ const NavBar = () => {
     setUser(null);
     document.cookie =
       "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'success',
+        title: 'Nos vemos pronto!'
+      });
   };
 
   const getGoogleLoggedUserInfo = async () => {
@@ -74,13 +83,14 @@ const NavBar = () => {
           xmlns="http://www.w3.org/2000/svg"
           height="1em"
           viewBox="0 0 448 512"
+          className="mr-5 w-7 h-7"
         >
           <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
         </svg>
       </div>
-      <h1 className="flex gap-2 items-center justify-center text font-semibold  text-xl md:text-3xl tracking-widest cursor-pointer text-orange-800">
+      <h1 className="flex gap-2 items-center justify-center text font-semibold  text-2xl md:text-3xl tracking-widest cursor-pointer text-orange-800">
         <Link href="/">PetSitterFinder</Link>
-        <FontAwesomeIcon icon={faPaw} />
+        <FontAwesomeIcon icon={faPaw} size="lg"/>
       </h1>
       <div className="hidden sm:flex gap-4 font-medium text-black ">
         {loading ? (
@@ -98,7 +108,7 @@ const NavBar = () => {
                 hover:scale-110 duration-200 bg-violet-300 p-3 rounded-lg"
             >
               <Link href="/user/pets">
-                <FontAwesomeIcon className="w-6 h-6" icon={faPaw} />
+                <FontAwesomeIcon size="xl" icon={faPaw} />
               </Link>
             </span>
             <span
@@ -106,7 +116,7 @@ const NavBar = () => {
                 hover:scale-110 duration-200 bg-violet-300 p-3 rounded-lg"
             >
               <Link href="#">
-                <FontAwesomeIcon className="w-6 h-6" icon={faCommentDots} />
+                <FontAwesomeIcon size="xl" icon={faCommentDots} />
               </Link>
             </span>
             <span
@@ -115,7 +125,7 @@ const NavBar = () => {
             >
               <Link href="/" onClick={handleLogOutBtn}>
                 <FontAwesomeIcon
-                  className="w-6 h-6"
+                  size="xl"
                   icon={faRightFromBracket}
                 />
               </Link>
@@ -141,7 +151,7 @@ const NavBar = () => {
                     hover:scale-110 duration-200 bg-violet-300 p-3 rounded-lg"
               >
                 <Link href="/">
-                  <FontAwesomeIcon className="w-6 h-6" icon={faUser} />
+                  <FontAwesomeIcon size="xl" icon={faUser} />
                 </Link>
               </span>
             )}
@@ -178,25 +188,19 @@ const NavBar = () => {
               <br />
               {user && (
                 <>
-                <Link href="#">
+                <Link href="/user/chat">
                   <h3 className="font-medium mt-1 p-2 cursor-pointer rounded-xl duration-150 hover:bg-slate-300">
-                    <FontAwesomeIcon className="w-7 h-7" icon={faCommentDots} />{" "}
+                    <FontAwesomeIcon size="xl" icon={faCommentDots} />{" "}
                     Chat
                   </h3>
                 </Link>
                 <Link href="#">
-                  <h3 className="font-medium mt-1 p-2 cursor-pointer rounded-xl duration-150 hover:bg-slate-300">
-                  <FontAwesomeIcon className="w-7 h-7" icon={faPaw} />{" "}
-                    Mascotas
-                  </h3>
-                </Link>
-                <Link href="#">
                   <h3 className="font-medium mt-1 p-2 cursor-pointer align-center rounded-xl duration-150 hover:bg-slate-300">
-                  <FontAwesomeIcon className="w-7 h-7" icon={faShop} />{" "}
+                  <FontAwesomeIcon size="xl" icon={faShop} />{" "}
                     Tienda
                   </h3>
                 </Link>
-                <Link href="#">
+                <Link href="/user/pets">
                   <h3 className="font-medium mt-1 hover:scale-105 p-2 cursor-pointer text-center rounded-xl duration-150 bg-violet-200 hover:bg-slate-300">
                     Buscar sitter!
                   </h3>
@@ -209,7 +213,7 @@ const NavBar = () => {
                 <>
                   <Link href="#">
                     <h3 className="font-normal hover:scale-105 cursor-pointer">
-                      <FontAwesomeIcon icon={faUser} /> Configuración
+                      <FontAwesomeIcon icon={faUser} size="xl"/> Configuración
                     </h3>
                   </Link>
                   <Link href="/">
@@ -217,7 +221,7 @@ const NavBar = () => {
                       className="font-normal hover:scale-105 cursor-pointer"
                       onClick={handleLogOutBtn}
                     >
-                      <FontAwesomeIcon icon={faRightFromBracket} /> Log out
+                      <FontAwesomeIcon icon={faRightFromBracket} size="xl"/> Log out
                     </h3>
                   </Link>
                 </>
