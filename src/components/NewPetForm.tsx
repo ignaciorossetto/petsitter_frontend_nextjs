@@ -106,7 +106,7 @@ useEffect(()=> {
 
   return (
     <div className='min-h-[60vh] bg-[url(/gradient.png)] bg-cover rounded-2xl flex p-10 justify-center'>
-      {loading && <FontAwesomeIcon icon={faSpinner} spin className='h-16 w-16 '/> }
+      {loading && <FontAwesomeIcon size='2xl' icon={faSpinner} spin className=''/> }
       {!loading &&
         <form className='flex flex-col w-full sm:w-[70%]' onSubmit={handleSubmit(onSubmit)} ref={formRef}>
             <h1 className='text-4xl sm:text-5xl font-medium mb-5 text-center'>Nueva mascota</h1>

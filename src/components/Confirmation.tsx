@@ -90,7 +90,7 @@ const Confirmation = () => {
   return (
     <>
         <>
-          <FontAwesomeIcon className={`${!loading && "hidden"} w-24 h-24`} icon={faSpinner} spin />
+          <FontAwesomeIcon className={`${!loading && "hidden"} w-24 h-24`} icon={faSpinner} size="2xl" spin />
           <div className="p-10 text-2xl font-medium">
             {message}{reSendMailTick && <FontAwesomeIcon icon={faCheck} className="ml-3 h-8 w-8 text-green-400" />}
           </div>

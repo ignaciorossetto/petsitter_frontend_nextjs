@@ -78,7 +78,7 @@ const searchParams = useSearchParams();
 
   return (
     <div className='w-full flex flex-col items-center justify-start min-h-[60vh]'>
-        {loading ? <FontAwesomeIcon icon={faSpinner}  className='h-16 w-16 p-20' spin/> : <div className='text-2xl font-medium p-20'>{error}</div>}
+        {loading ? <FontAwesomeIcon size='2xl' icon={faSpinner}  className='h-16 w-16 p-20' spin/> : <div className='text-2xl font-medium p-20'>{error}</div>}
         {(Number(code) === 3 && !loading) && 
         <>
         <div className='text-center font-medium mb-5 text-xl'>Envía de nuevo el email de confirmación!</div>
