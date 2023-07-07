@@ -1,54 +1,39 @@
-"use client"
-import Footer from '@/components/Footer'
-import NavBar from '@/components/NavBar'
-import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import {   useLoadScript } from "@react-google-maps/api";
 import AddressGoogleMapInput from '@/components/AddressGoogleMapInput';
 import axios from 'axios'
 import Swal from 'sweetalert2';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
-
-
 
 interface Address {
-  address: string;
-  latLng: {
-    lat: number;
-    lng: number;
+    address: string;
+    latLng: {
+      lat: number;
+      lng: number;
+    }
+  
+  }
+  
+  interface Form {
+    username: string;
+    password: string;
+    confirmPswd: string;
+    email: string;
+    confirmEmail: string;
+    fullAddress: Address;
+    type?: string;
+    newsCheckBox?: boolean;
+    termsCheckBock?: boolean;
+    pets?: Array<string>;
+    admin?: boolean;
+    profileImg?: string;
+    strategy: string;
   }
 
-}
+ 
 
-interface Form {
-  username: string;
-  password: string;
-  confirmPswd: string;
-  email: string;
-  confirmEmail: string;
-  fullAddress: Address;
-  type?: string;
-  newsCheckBox?: boolean;
-  termsCheckBock?: boolean;
-  pets?: Array<string>;
-  admin?: boolean;
-  profileImg?: string;
-  strategy: string;
-}
-
-
-
-const SignUpView = () => {
-  const [submittingForm, setSubmittingForm] = useState(false
-    )
-  const [submittedForm, setSubmittedForm] = useState(false)
-  const [email, setEmail] = useState<string>('')
-  const signUpFormRef = useRef<HTMLFormElement>()
+const SignUpForm = ({setSubmittingForm, setEmail, setSubmittedForm}:any) => {
   const [address, setAddress] = useState()
-  const router = useRouter()
   const {register, handleSubmit, watch, reset, setError, formState: { errors } } = useForm<Form>()
   const onSubmitHandler = async(values: Form) => {
     values.fullAddress = address!
@@ -98,28 +83,9 @@ const SignUpView = () => {
     return password === confirmPswd;
   };
 
+
   return (
-    <>
-    <NavBar/>
-    <section className='flex flex-col items-center justify-center w-full bg-[url("/gradient.png")] bg-cover rounded-2xl min-h-[80vh] shadow-2xl'>
-      {
-        submittingForm && <FontAwesomeIcon size='2xl' icon={faSpinner} spin />
-      }
-      {
-        submittedForm && 
-        <div className={`py-5 w-full flex flex-col justify-start`}>
-        <h1 className='text-3xl break-all font-semibold mb-5 text-center'>Felicitaciones!</h1>
-        <h3 className='hidden sm:block p-2 py-3 break-all break-normal xs:px-[10%] sm:px-[25%] lg:pl-[35%]  text-2xl'>Creaste tu cuenta exitosamente.</h3>
-        <h3 className='p-2 py-3 break-all xs:px-[10%] sm:px-[25%] lg:pl-[35%] text-xl sm:text-2xl'>Te enviamos un mail a <br /> <span className='font-bold'>{email}</span></h3>
-        <h3 className='p-2 py-3 break-all xs:px-[10%] sm:px-[25%] lg:pl-[35%] text-xl sm:text-2xl'> Hace click en el link para confirmarla.</h3>
-        <br />
-        <h3 className='p-2 text-center text-2xl font-semibold'>Ir a <Link href={'/'}><FontAwesomeIcon className='hover:scale-105 duration-200' icon={faHome}/></Link></h3>
-      </div>
-      }
-      {
-        (!submittingForm && !submittedForm) &&
-      
-      <form  className={` flex flex-col gap-3 p-5 items-center sm:w-96`} onSubmit={handleSubmit(onSubmitHandler)}>
+    <form  className={` flex flex-col gap-3 p-5 items-center sm:w-96`} onSubmit={handleSubmit(onSubmitHandler)}>
       <h1 className='text-5xl mb-2 text-center font-medium pt-5'>Registro</h1>
 
       <label className='font-medium w-full sm:w-96 self-start text-lg '>Nombre completo</label>
@@ -236,12 +202,8 @@ const SignUpView = () => {
 
 
       <button className=' w-full p-5 my-10 text-xl font-semibold duration-500 transition-all rounded-2xl bg-violet-300 hover:scale-105  hover:bg-violet-700 hover:text-white hover:bg-cover shadow-2xl'>Crear usuario</button>
-      </form>}
-    </section>
-    <Footer/>
-
-    </>
+      </form>
   )
 }
 
-export default SignUpView
+export default SignUpForm

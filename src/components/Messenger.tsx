@@ -7,7 +7,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import Conversation from './Conversation';
 import Message from './Message';
-import { io } from 'socket.io-client';
 
 const Messenger = () => {
     const {user} = useContext(UserContext)

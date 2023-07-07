@@ -47,8 +47,6 @@ const NavBar = () => {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google/login`, {withCredentials:true}
       );
-      console.log(response)
-      console.log(response.data.payload);
       setUser(response.data.payload);
       setLoading(false);
       Swal.fire({
@@ -61,7 +59,6 @@ const NavBar = () => {
         title: `Bienvenido ${response.data.payload.username}!`,
       });
     } catch (error) {
-        console.log(error)
       router.push("/error?code=1");
     }
   };
@@ -108,7 +105,7 @@ const NavBar = () => {
                 hover:scale-110 duration-200 bg-violet-300 p-3 rounded-lg"
             >
               <Link href="/user/pets">
-                <FontAwesomeIcon size="xl" icon={faPaw} />
+                <FontAwesomeIcon size="xl" icon={faPaw}  className="text-black"/>
               </Link>
             </span>
             <span
@@ -116,7 +113,7 @@ const NavBar = () => {
                 hover:scale-110 duration-200 bg-violet-300 p-3 rounded-lg"
             >
               <Link href="/user/chat">
-                <FontAwesomeIcon size="xl" icon={faCommentDots} />
+                <FontAwesomeIcon size="xl" icon={faCommentDots}  className="text-black"/>
               </Link>
             </span>
             <span
@@ -126,7 +123,7 @@ const NavBar = () => {
               <Link href="/" onClick={handleLogOutBtn}>
                 <FontAwesomeIcon
                   size="xl"
-                  icon={faRightFromBracket}
+                  icon={faRightFromBracket} className="text-black"
                 />
               </Link>
             </span>
@@ -151,7 +148,7 @@ const NavBar = () => {
                     hover:scale-110 duration-200 bg-violet-300 p-3 rounded-lg"
               >
                 <Link href="/user">
-                  <FontAwesomeIcon size="xl" icon={faUser} />
+                  <FontAwesomeIcon size="xl" icon={faUser} className="text-black"/>
                 </Link>
               </span>
             )}
