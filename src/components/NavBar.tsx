@@ -138,7 +138,7 @@ const NavBar = () => {
                     alt="profile-image"
                     height={51}
                     width={51}
-                    className="object-fit object-center rounded-lg"
+                    className="object-fit object-center rounded-lg h-[51px] w-[51px] object-cover"
                   />
                 </Link>
               </span>

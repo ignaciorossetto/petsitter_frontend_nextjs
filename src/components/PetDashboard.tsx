@@ -3,25 +3,10 @@ import axios from 'axios'
 import { UserContext } from '@/hooks/auth/authContext'
 import { useRouter } from 'next/navigation'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faShieldDog, faShop, faSpinner } from '@fortawesome/free-solid-svg-icons'
-import Image from 'next/image'
-import { faCalendar, faCalendarAlt, faCalendarPlus, faTrashCan } from '@fortawesome/free-regular-svg-icons'
+import { faPlus, faShop, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import Link from 'next/link'
 import Swal from 'sweetalert2'
-
-// const pets = [
-//     {
-//     name: 'Tomi',
-//     images: ['https://www.hartz.com/wp-content/uploads/2022/04/small-dog-owners-1.jpg'],
-//     sex: 'male'
-// },
-//     {
-//     name: 'María',
-//     images: ['/maria.jpg'],
-//     sex: 'female'
-// },
-
-// ]
+import PetCard from './PetCard'
 
 const PetDashboard = () => {
     const {user, setUser, verifyAuth} = useContext(UserContext) 
@@ -85,23 +70,7 @@ const PetDashboard = () => {
             <div className='flex gap-10 flex-wrap justify-center'>
 
         {!loading && user?.pets.map((e:any)=>
-            <div key={e?._id} className={`bg-${e?.sex === 'male' ? 'blue' : 'pink'}-100 shadow-2xl p-5 flex flex-col gap-5`}>
-                <div className='relative h-[50%] flex-1'>
-                <Image src={e?.images[0]} alt='' width={300} height={300}  className='min-w-[300px] min-h-[300px] max-w-[300px] max-h-[300px] object-cover hover:scale-110 duration-200 cursor-pointer rounded-2xl'/>
-                <div className='absolute top-[-15px] right-[-5px] bg-white p-3 rounded-xl font-semibold shadow-xl '>{e.name}</div>
-                </div>
-                <div className='flex gap-5 justify-center'>
-                    <Link href={'/user/get-sitter'}>
-                    <FontAwesomeIcon size="xl"  className='cursor-pointer hover:scale-105 duration-200' icon={faCalendarPlus}/>
-                    </Link>
-                    <Link href={'#'}>
-                    <FontAwesomeIcon size="xl"  className='cursor-pointer hover:scale-105 duration-200' icon={faShieldDog}/>
-                    </Link>
-                    <div onClick={()=> handleDeletePetBtn(e._id)}>
-                    <FontAwesomeIcon size="xl"  className='cursor-pointer hover:scale-105 duration-200 text-red-500' icon={faTrashCan}/>
-                    </div>
-                </div>
-            </div>
+            <PetCard key={e._id} handleDeletePetBtn={handleDeletePetBtn} e={e}/>
             )
         }
             {user?.pets.length === 0 && 
