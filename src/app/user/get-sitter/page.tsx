@@ -46,8 +46,8 @@ const GetSitterView = () => {
         }
         try {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations`, obj, {withCredentials:true})
-            console.log(response.data)
-            router.push(`/user/chat?cid=${response.data._id}`)
+            const sitterID = response.data.members.filter((e:any)=> e !== user._id)
+            router.push(`/user/chat?cid=${response.data._id}&sid=${sitterID[0]}`)
             setLoadingSitterContact(false)
         } catch (error) {
             console.log(error)

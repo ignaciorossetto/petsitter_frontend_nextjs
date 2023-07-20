@@ -1,9 +1,7 @@
 "use client"
 import Footer from '@/components/Footer'
 import NavBar from '@/components/NavBar'
-import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react'
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';

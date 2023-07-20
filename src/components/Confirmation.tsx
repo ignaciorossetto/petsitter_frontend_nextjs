@@ -11,6 +11,7 @@ const Confirmation = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const email = searchParams.get("email");
+  const type = searchParams.get("type");
   const [loading, setLoading] = useState(false);
   const [reSendMailTick, setReSendMailTick] = useState(false)
   const [errorMsg, setErrorMsg] = useState<boolean>(false);
@@ -35,12 +36,16 @@ const Confirmation = () => {
 
   useEffect(() => {
     setLoading(true);
+    console.log(type)
       const checkAccount = async () => {
       const obj = {
         token: token,
         email: email,
+        type: type || undefined
       };
+      console.log(obj)
       try {
+
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/checkAccount`,
           obj

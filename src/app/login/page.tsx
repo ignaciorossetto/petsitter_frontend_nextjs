@@ -12,7 +12,7 @@ const loginView = () => {
     <>
     <NavBar />
     <div className='flex flex-col justify-between min-h-full h-[80vh] my-5 -mb-4 shadow-2xl'>
-        <LoginForm/>
+        <LoginForm />
     </div>
     <Footer/>
     </>

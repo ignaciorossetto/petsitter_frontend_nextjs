@@ -9,7 +9,6 @@ import React, { useContext } from 'react'
 import Swal from 'sweetalert2'
 
 const PetCard = ({e, handleDeletePetBtn}:any) => {
-    console.log(e)
     const {user} = useContext(UserContext)
     const router = useRouter()
     const handleGetSitterBtn = () => {
@@ -30,10 +29,12 @@ const PetCard = ({e, handleDeletePetBtn}:any) => {
 
 
   return (
-    <div key={e?._id} className={`bg-${e?.sex === 'male' ? 'blue' : 'pink'}-100 shadow-2xl p-5 flex flex-col gap-5`}>
+    <div key={e?._id} className={`${e?.sex === 'male' ? 'bg-blue-100' : 'bg-pink-100' }  w-[350px] shadow-2xl p-5 flex flex-col gap-5 items-center`}>
                 <div className='relative h-[50%] flex-1'>
-                <Image src={e?.images[0]} alt='' width={300} height={300}  className='min-w-[300px] min-h-[300px] max-w-[300px] max-h-[300px] object-cover hover:scale-110 duration-200 cursor-pointer rounded-2xl'/>
-                <div className='absolute top-[-15px] right-[-5px] bg-white p-3 rounded-xl font-semibold shadow-xl '>{e.name}</div>
+                <div className='h-[300px] w-[300px] relative'>
+                    <Image src={e?.images[0]} alt='pet-image' fill={true} className='min-w-[300px] min-h-[300px] max-w-[300px] max-h-[300px] object-cover hover:scale-110 duration-200 cursor-pointer rounded-2xl'/>
+                    <div className='absolute top-[-15px] right-[-5px] bg-white p-3 rounded-xl font-semibold shadow-xl '>{e.name}</div>
+                </div>
                 </div>
                 <div className='flex gap-5 justify-center'>
                     <button onClick={handleGetSitterBtn}>

@@ -1,30 +1,66 @@
 "use client"
+import { UserContext } from '@/hooks/auth/authContext'
+import { faUser } from '@fortawesome/free-regular-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import axios from 'axios'
 import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
-const Conversation = ({conv, selectedConv, setSelectedConv, sitterID}:any) => {
-    const [sitterInfo, setSitterInfo] = useState<any>(null)
-    const fetchSitterInfo = async() => {
+const Conversation = ({type, conv, selectedConv, setSelectedConv, receiverID, setSelectedReceiver}:any) => {
+    const {setReceiver} = useContext(UserContext)
+    const [convInfo, setConvInfo] = useState<any>(null)
+    const fetchSitterInfo = async(url:any) => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations/user/friend/${sitterID}`, {withCredentials:true})
-            setSitterInfo(response?.data)   
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations${url}${receiverID}`, {withCredentials:true})
+            setConvInfo(response?.data)   
         } catch (error) {
             console.log(error)
         }
     }
-
     useEffect(()=> {
-        fetchSitterInfo()
+        if (type==='sitter') {
+            fetchSitterInfo('/sitter/user/')
+            return
+        }
+        fetchSitterInfo('/user/sitter/')
     }, [])
 
 
   return (
-    <div onClick={()=>setSelectedConv(conv._id)} className={`md:p-5 md:w-full ${conv._id === selectedConv ? ' md:bg-violet-700 text-white font-bold' : 'md:bg-violet-300 text-black hover:scale-110'} rounded-2xl flex gap-4 items-center font-semibold duration-100 cursor-pointer `}>
-                <div className='min-w-[80px] min-h-[80px] relative flex justify-center items-center'>
-                    <Image src={'/maria.jpg'} content='cover' fill={true} alt='img' className={`${conv._id === selectedConv ? ' border-violet-700 border-4 scale-110 sm:border-none sm:scale-100' : 'border-violet-300 border-4 sm:border-none '}text-center  md:border-none rounded-[100px]`}/>  
+    <div 
+        onClick={()=>{
+            setSelectedConv(conv._id);
+            setSelectedReceiver(convInfo);
+            setReceiver(convInfo)
+            }} 
+        className={`p-5 w-[91%] sm:w-full bg-white/20 sm:bg-transparent
+        ${conv._id === selectedConv ? 
+
+        `${type==='sitter' ? 
+                'bg-white/80 sm:bg-transparent lg:bg-white text-black' 
+                : 'lg:bg-violet-700 text-white'} scale-110 text-lg font-bold` 
+
+        : `${type==='sitter' ? 
+                'lg:bg-green-800/80' 
+                : 'lg:bg-violet-300'} text-black `}  
+
+        hover:scale-110 flex gap-4 justify-start sm:justify-center lg:justify-start sm:rounded-2xl items-center font-semibold duration-100 cursor-pointer `}>
+                <div className='relative min-w-[80px] min-h-[80px] flex justify-center items-center'>
+                    {
+                        !convInfo?.profileImg && <FontAwesomeIcon icon={faUser} size='xl' 
+                        className={`
+                        ${conv._id === selectedConv ? 
+                            'p-4 border-violet-800 border-4 scale-110 lg:border-none lg:scale-100' 
+                            : ' p-4 border-violet-300 border-4 lg:border-none '}
+                            text-center  rounded-[100px] object-cover`}/>
+                    }
+                    {
+                        convInfo?.profileImg && 
+                    <Image src={convInfo?.profileImg} fill={true}   alt='img' className={`${conv._id === selectedConv ? ' border-violet-800 border-4 scale-110 lg:border-none lg:scale-100' : 'border-violet-300 border-4 lg:border-none '}text-center  lg:border-none rounded-[100px] object-cover`}/>  
+                     }
                 </div>
-                <h2 className='hidden md:block' >{sitterInfo?.username}</h2>
+                <h2 className='block sm:hidden lg:block  break-all' >{convInfo?.username}</h2>
+                <br />
     </div>
   )
 }

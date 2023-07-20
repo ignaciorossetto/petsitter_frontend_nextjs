@@ -20,26 +20,33 @@ import Image from "next/image";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-const NavBar = () => {
+const NavBar = ({type}:any) => {
   const searchParams = useSearchParams();
   const googleLogin: any = searchParams.get("login-google");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [showNavBarModal, setShowNavBarModal] = useState(false);
-  const { user, setUser } = useContext(UserContext);
+  const { user, setUser, socket } = useContext(UserContext);
+
+
+
   const handleLogOutBtn = () => {
+    console.log('hitted')
+    socket.current.emit('logout')
     setUser(null);
-    document.cookie =
-      "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      Swal.fire({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        title: 'Nos vemos pronto!'
-      });
+    document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      icon: 'success',
+      title: 'Nos vemos pronto!'
+    });
+    if (type==='sitter') return router.push('/sitter');
+    router.push('/');
   };
 
   const getGoogleLoggedUserInfo = async () => {
@@ -58,6 +65,7 @@ const NavBar = () => {
         icon: "success",
         title: `Bienvenido ${response.data.payload.username}!`,
       });
+      socket.current.emit("identity", response.data.payload._id);
     } catch (error) {
       router.push("/error?code=1");
     }
@@ -85,8 +93,9 @@ const NavBar = () => {
           <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
         </svg>
       </div>
-      <h1 className="flex gap-2 items-center justify-center text font-semibold  text-2xl md:text-3xl tracking-widest cursor-pointer text-orange-800">
-        <Link href="/">PetSitterFinder</Link>
+      <h1 className="relative flex gap-2 items-center justify-center text font-semibold  text-2xl md:text-3xl tracking-widest cursor-pointer text-orange-800">
+        <Link href={type === 'sitter' ? '/sitter' : '/'}>PetSitterFinder</Link>
+        {type==='sitter' && <p className="absolute top-[28px] right-0 text-md italic font-light text-green-900">Sitters</p>}
         <FontAwesomeIcon icon={faPaw} size="lg"/>
       </h1>
       <div className="hidden sm:flex gap-4 font-medium text-black ">
@@ -100,6 +109,8 @@ const NavBar = () => {
           </div>
         ) : user ? (
           <>
+          {
+            type!=='sitter' &&
             <span
               className="cursor-pointer
                 hover:scale-110 duration-200 bg-violet-300 p-3 rounded-lg"
@@ -108,31 +119,32 @@ const NavBar = () => {
                 <FontAwesomeIcon size="xl" icon={faPaw}  className="text-black"/>
               </Link>
             </span>
+          }
             <span
-              className="cursor-pointer
-                hover:scale-110 duration-200 bg-violet-300 p-3 rounded-lg"
+              className={`cursor-pointer
+                hover:scale-110 duration-200 ${type==='sitter' ? 'bg-gradient-to-tr from-lime-400 to-emerald-300' : 'bg-violet-300'} p-3 rounded-lg`}
             >
-              <Link href="/user/chat">
+              <Link href={`${type==='sitter' ? '/sitter/chat' : '/user/chat'}`}>
                 <FontAwesomeIcon size="xl" icon={faCommentDots}  className="text-black"/>
               </Link>
             </span>
             <span
-              className="cursor-pointer
-                hover:scale-110 duration-200 bg-violet-300 p-3 rounded-lg"
+              className={`cursor-pointer
+                hover:scale-110 duration-200 ${type==='sitter' ? 'bg-gradient-to-tr from-lime-400 to-emerald-300' : 'bg-violet-300'} p-3 rounded-lg`}
             >
-              <Link href="/" onClick={handleLogOutBtn}>
+              <button onClick={handleLogOutBtn}>
                 <FontAwesomeIcon
                   size="xl"
                   icon={faRightFromBracket} className="text-black"
                 />
-              </Link>
+              </button>
             </span>
             {user?.profileImg ? (
               <span
                 className="cursor-pointer
                     hover:scale-110 duration-200 rounded-lg hover:shadow-2xl"
               >
-                <Link href="/user">
+                <Link href={`${type==='sitter' ? `/sitter/${user._id}` : '/user'}`}>
                   <Image
                     src={user?.profileImg}
                     alt="profile-image"
@@ -144,30 +156,35 @@ const NavBar = () => {
               </span>
             ) : (
               <span
-                className="cursor-pointer
-                    hover:scale-110 duration-200 bg-violet-300 p-3 rounded-lg"
+                className={`cursor-pointer
+                    hover:scale-110 duration-200 ${type==='sitter' ? 'bg-gradient-to-tr from-lime-400 to-emerald-300' : 'bg-violet-300'} p-3 rounded-lg`}
               >
-                <Link href="/user">
+                <Link href={`${type==='sitter' ? `/sitter/${user._id}` : '/user'}`}>
                   <FontAwesomeIcon size="xl" icon={faUser} className="text-black"/>
                 </Link>
               </span>
             )}
           </>
         ) : (
-          <>
-            <span
-              className="cursor-pointer
-                hover:scale-110 duration-200 bg-violet-300 p-4 font-semibold text-md rounded-lg"
-            >
-              <Link href="/login">Ingresar</Link>
-            </span>
-            <span
-              className="cursor-pointer
-                hover:scale-110 duration-200 bg-violet-300 p-4 font-semibold text-md rounded-lg"
-            >
-              <Link href="/sign-up">Registrar</Link>
-            </span>
-          </>
+          
+          
+            
+            <>
+            <Link 
+            href={`${type==='sitter' ? '/sitter/login' : '/login'}`} 
+            className={`cursor-pointer hover:scale-110 duration-200 ${type==='sitter' ?  'bg-gradient-to-tr from-lime-400 to-emerald-300' : 'bg-violet-300' } p-4 font-semibold text-md rounded-lg`}>
+                Ingresar
+          </Link>
+          <Link 
+          href={`${type==='sitter' ? '/sitter/sign-up' : '/login'}`} 
+          className={`cursor-pointer hover:scale-110 duration-200 ${type==='sitter' ?  'bg-gradient-to-tr from-lime-400 to-emerald-300' : 'bg-violet-300' } p-4 font-semibold text-md rounded-lg`}>
+            Registrar
+          </Link> 
+         
+        </>
+        
+        
+          
         )}
       </div>
       {showNavBarModal && (
@@ -185,35 +202,42 @@ const NavBar = () => {
               <br />
               {user && (
                 <>
-                <Link href="/user/chat">
+                <Link href={type==='sitter' ? '/sitter/chat' : `/user/chat`}>
                   <h3 className="font-medium mt-1 p-2 cursor-pointer rounded-xl duration-150 hover:bg-slate-300">
                     <FontAwesomeIcon size="xl" icon={faCommentDots} />{" "}
                     Chat
                   </h3>
                 </Link>
+                {
+                  type!=='sitter' && 
+                
                 <Link href="#">
                   <h3 className="font-medium mt-1 p-2 cursor-pointer align-center rounded-xl duration-150 hover:bg-slate-300">
                   <FontAwesomeIcon size="xl" icon={faShop} />{" "}
                     Tienda
                   </h3>
                 </Link>
+                }
+                {
+                  type!=='sitter' && 
+                
                 <Link href="/user/pets">
                   <h3 className="font-medium mt-1 hover:scale-105 p-2 cursor-pointer text-center rounded-xl duration-150 bg-violet-200 hover:bg-slate-300">
                     Buscar sitter!
                   </h3>
-                </Link>
+                </Link>}
                 </>
               )}
             </div>
             <div className="pb-5 ">
               {user ? (
                 <>
-                  <Link href="#">
+                  <Link href={type==='sitter' ? `/sitter/${user._id}` : `/user`}>
                     <h3 className="font-normal hover:scale-105 cursor-pointer">
                       <FontAwesomeIcon icon={faUser} size="xl"/> Configuración
                     </h3>
                   </Link>
-                  <Link href="/">
+                  <Link href={type==='sitter' ? `/sitter` : `/`}>
                     <h3
                       className="font-normal hover:scale-105 cursor-pointer"
                       onClick={handleLogOutBtn}
@@ -224,12 +248,12 @@ const NavBar = () => {
                 </>
               ) : (
                 <>
-                  <Link href="/login">
+                  <Link href={type==='sitter' ? `/sitter/login` : `/login`}>
                     <h3 className="font-normal hover:scale-105 cursor-pointer">
                       Ingresar
                     </h3>
                   </Link>
-                  <Link href="/sign-up">
+                  <Link href={type==='sitter' ? `/sitter/sign-up` : `/sign-up`}>
                     <h3 className="font-normal hover:scale-105 cursor-pointer">
                       Registrar
                     </h3>
