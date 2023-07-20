@@ -26,7 +26,7 @@ export const UserContext = createContext({} as UserContextType)
 
 
 export const UserContextProvider = ({children}: UserContextProviderType) => {
-    const socket = useRef<any>(socketio(`http://localhost:5000`, {
+    const socket = useRef<any>(socketio(`${process.env.NEXT_PUBLIC_BACKEND_URL}`, {
         withCredentials:true,
         reconnection:false
     }))
