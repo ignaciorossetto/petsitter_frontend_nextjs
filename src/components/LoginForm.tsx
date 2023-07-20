@@ -135,7 +135,6 @@ const LoginForm = ({ type }: any) => {
           {" "}
           {type === "sitter" && "Sitters "}Login
         </h1>
-        {type === "sitter" && <h1>Hayley_Aufderhar28@hotmail.com</h1>}
         
         {loading && (
           <FontAwesomeIcon
