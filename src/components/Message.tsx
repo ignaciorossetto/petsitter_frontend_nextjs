@@ -18,23 +18,23 @@ const Message = ({message, scrollRef}:any) => {
                   
                   <div className='h-[50px] w-[50px] rounded-full relative'>
                     {
-                      receiver.profileImg && 
+                      receiver?.profileImg && 
                     <Image alt='profileImg' src={user?.profileImg} fill className='absolut object-cover rounded-full'/> 
                     }
                     {
-                      !receiver.profileImg && <FontAwesomeIcon icon={faUser} className='h-[35px] w-[35px]'/> 
+                      !receiver?.profileImg && <FontAwesomeIcon icon={faUser} className='h-[35px] w-[35px]'/> 
                     }
                   </div>
                 }
                 {
                   user?._id !== message?.sender && 
-                  <div className={`h-[50px] w-[50px] rounded-full relative ${!receiver.profileImg && 'bg-violet-300'} flex items-center justify-center `}>
+                  <div className={`h-[50px] w-[50px] rounded-full relative ${!receiver?.profileImg && 'bg-violet-300'} flex items-center justify-center `}>
                     {
-                      receiver.profileImg && 
-                      <Image alt='profileImg' src={receiver.profileImg} fill className='absolut object-cover rounded-full'/> 
+                      receiver?.profileImg && 
+                      <Image alt='profileImg' src={receiver?.profileImg} fill className='absolut object-cover rounded-full'/> 
                     }
                     {
-                      !receiver.profileImg && <FontAwesomeIcon icon={faUser} className='h-[35px] w-[35px]'/> 
+                      !receiver?.profileImg && <FontAwesomeIcon icon={faUser} className='h-[35px] w-[35px]'/> 
                     }
                   
                   </div>
