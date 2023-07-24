@@ -7,7 +7,7 @@ import React, { useEffect } from 'react'
 
 const ConfirmationView = () => {
   const searchParams = useSearchParams();
-  const type = searchParams.get("type");
+  const type = searchParams.get("type") || undefined
 
   return (
     <>

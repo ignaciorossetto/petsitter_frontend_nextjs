@@ -7,21 +7,29 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import Conversation from './Conversation';
 import Message from './Message';
+import { ConversationType, MessageType } from '@/types/types';
 
 
 const SitterMessenger = () => {
     const {user, socket} = useContext(UserContext)
     const searchParams = useSearchParams();
-    let [messages, setMessages] = useState<any>([])
+    let [messages, setMessages] = useState<MessageType[]>([])
     let [arrivalMessage, setArrivalMessage] = useState<any>(null)
     const [selectedConv, setSelectedConv] = useState<any>(null)
     const [selectedReceiver, setSelectedReceiver] = useState<any>(null)
     const router = useRouter()
-    const [conversationsArray, setConversationsArray] = useState<any>(null)
-    const [loadingMessages, setLoadingMessages] = useState(false)
-    const [loadingConversationsMenu, setLoadingConversationsMenu] = useState(false)
-    const [msgBox, setMsgBox] = useState('')
-    const scrollRef = useRef<any>()
+    const [conversationsArray, setConversationsArray] = useState<ConversationType[]>()
+    const [loadingMessages, setLoadingMessages] = useState<boolean>(false)
+    const [loadingConversationsMenu, setLoadingConversationsMenu] = useState<boolean>(false)
+    const [msgBox, setMsgBox] = useState<string>('')
+    const scrollRef = useRef<HTMLDivElement | undefined>()
+
+    useEffect(()=> {
+        scrollRef.current?.scrollIntoView(
+        {
+            behavior: 'instant',
+        })
+    }, [])
 
     useEffect(()=> {
         scrollRef.current?.scrollIntoView(
@@ -128,12 +136,28 @@ const SitterMessenger = () => {
         setSelectedConv(cid)
     }, [])
 
-    useEffect(()=> {
-        if(selectedConv){
-            console.log('here')
-            fetchMessages() 
-        }
 
+    useEffect(()=> {
+        console.log('Comp mounts')
+        let cancelToken = axios.CancelToken.source()
+        setLoadingMessages(true)
+        if(selectedConv){
+            axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/messages/${selectedConv}`, {withCredentials:true, cancelToken: cancelToken.token}).then((response)=> {
+                    console.log(response.data)
+                    setMessages(response.data)
+                    setLoadingMessages(false)}
+            ).catch((err)=>{
+                if (axios.isCancel(err)) {
+                    console.log('cancelled')
+                }
+                router.push('/error?code=1')
+                setLoadingMessages(false)
+            })}
+
+        return ()=> {
+            console.log('comp unmounted')
+            cancelToken.cancel()
+        }
     },[selectedConv])
 
 
@@ -146,8 +170,8 @@ const SitterMessenger = () => {
 
         {
          !loadingConversationsMenu ?
-        conversationsArray?.map((e:any, index:any)=>
-             <Conversation type='sitter' key={index} conv={e}  setSelectedReceiver={setSelectedReceiver} selectedConv={selectedConv} setSelectedConv={setSelectedConv} receiverID={e?.members.filter((e:any)=> e !== user?._id)}/>
+        conversationsArray?.map((e:ConversationType)=>
+             <Conversation type='sitter' key={e._id} conv={e}  setSelectedReceiver={setSelectedReceiver} selectedConv={selectedConv} setSelectedConv={setSelectedConv} receiverID={e?.members.filter((e:string)=> e !== user?._id)}/>
         ) : 
         <div className='flex justify-center items-center'>
             <FontAwesomeIcon icon={faSpinner} size='2xl' spin className='h-16 w-16 mt-20'/>
@@ -164,8 +188,8 @@ const SitterMessenger = () => {
         <div className='w-full h-[85%] bg-white sm:rounded-2xl shadow-2xl flex flex-col overflow-scroll overflow-x-hidden'>
 
         { !loadingMessages ? 
-            messages?.map((element:any, index:any)=> 
-                <Message key={index} message={element} scrollRef={scrollRef} selectedReceiver={selectedReceiver}/>
+            messages?.map((element:MessageType, index:any)=> 
+                <Message key={index} message={element} scrollRef={scrollRef}/>
             )
             :
             <div className='flex mt-20 justify-center items-center'>

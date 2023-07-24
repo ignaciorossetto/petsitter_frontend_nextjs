@@ -8,9 +8,9 @@ import Link from 'next/link';
 import SignUpForm from '@/components/SignUpForm';
 
 const SignUpView = () => {
-  const [submittingForm, setSubmittingForm] = useState(false
+  const [submittingForm, setSubmittingForm] = useState<boolean>(false
     )
-  const [submittedForm, setSubmittedForm] = useState(false)
+  const [submittedForm, setSubmittedForm] = useState<boolean>(false)
   const [email, setEmail] = useState<string>('')
   
 

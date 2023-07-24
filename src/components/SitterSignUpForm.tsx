@@ -8,44 +8,30 @@ import Swal from 'sweetalert2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
+import { AddressType, SitterSignUpFormType } from '@/types/types';
 
-interface Address {
-    address_: string;
-    latLng: {
-      lat: number;
-      lng: number;
-    }
+
   
-  }
-  
-  interface Form {
-    username: string;
-    password: string;
-    confirmPswd: string;
-    email: string;
-    addressFile: any;
-    confirmEmail: string;
-    fullAddress: Address;
-    type?: string;
-    newsCheckBox?: boolean;
-    termsCheckBock?: boolean;
-    pets?: Array<string>;
-    admin?: boolean;
-    profileImg?: any;
-    strategy: string;
-  }
+
 
 
 
 
 const SitterSignUpForm = () => {
-  const [address, setAddress] = useState<any>()
+  const [address, setAddress] = useState<AddressType>({
+    address: '',
+    latLng: {
+      lat: 0,
+      lng: 0,
+    }
+  })
+  
   const [addressFileInput, setAddressFileInput] = useState()
   const [email, setEmail] = useState(null)
   const [submittedForm, setSubmittedForm] = useState(false)
   const [loading, setLoading] = useState(false)
   const [profileImg, setProfileImg] = useState()
-  const {register, handleSubmit, watch, reset, setError, formState: { errors } } = useForm<Form>()
+  const {register, handleSubmit, watch, reset, setError, formState: { errors } } = useForm<SitterSignUpFormType>()
   const {isLoaded} = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
     libraries: ['places'],
@@ -73,8 +59,8 @@ const SitterSignUpForm = () => {
         for (const key in data) {
             formData.append(key, data[key])
         }
-        formData.append('address', address.address)
-        formData.append('latLng', JSON.stringify([address.latLng.lng, address.latLng.lat]))
+        formData.append('address', address.address!)
+        formData.append('latLng', JSON.stringify([address.latLng!.lng, address.latLng!.lat]))
         try {
             await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/sitter-register`, formData, {
                 withCredentials: true,

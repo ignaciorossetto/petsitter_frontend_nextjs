@@ -7,13 +7,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import Conversation from './Conversation';
 import Message from './Message';
+import { MessageType } from '@/types/types';
 
 
 const Messenger = () => {
     const {user, socket} = useContext(UserContext)
     const searchParams = useSearchParams();
-    let [messages, setMessages] = useState<any>([])
-    let [arrivalMessage, setArrivalMessage] = useState<any>(null)
+    let [messages, setMessages] = useState<MessageType[]>([])
+    let [arrivalMessage, setArrivalMessage] = useState<MessageType | null>(null)
     const [selectedConv, setSelectedConv] = useState<any>(null)
     const [selectedReceiver, setSelectedReceiver] = useState<any>(null)
     const router = useRouter()
@@ -21,7 +22,7 @@ const Messenger = () => {
     const [loadingMessages, setLoadingMessages] = useState(false)
     const [loadingConversationsMenu, setLoadingConversationsMenu] = useState(false)
     const [msgBox, setMsgBox] = useState('')
-    const scrollRef = useRef<any>()
+    const scrollRef = useRef<HTMLDivElement | undefined>()
 
     useEffect(()=> {
         scrollRef.current?.scrollIntoView(
@@ -31,9 +32,7 @@ const Messenger = () => {
     }, [messages])
 
 
-
     useEffect(()=> {
-
         socket.current.on('getMessage', (data:any)=>{
             setArrivalMessage({
                 sender:data?.senderId,
@@ -50,11 +49,11 @@ const Messenger = () => {
         }
     },[arrivalMessage, selectedConv,selectedReceiver])
 
-    const handleSendMsgEnter = async(e:any) => {
+    const handleSendMsgEnter = async(e:React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key !== 'Enter') {
             return
         }
-        const obj = {
+        const obj:MessageType = {
             conversationId: selectedConv,
             sender: user._id,
             text: msgBox
@@ -74,8 +73,8 @@ const Messenger = () => {
         setMsgBox('')
     }
 
-    const handleSendMsg = async(e:any) => {
-        const obj = {
+    const handleSendMsg = async(e:React.MouseEvent<HTMLDivElement>) => {
+        const obj:MessageType = {
             conversationId: selectedConv,
             sender: user._id,
             text: msgBox
@@ -113,6 +112,7 @@ const Messenger = () => {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/messages/${selectedConv}`, {withCredentials:true})
             setMessages(response.data)
+            console.log(response.data)
             setLoadingMessages(false)
         } catch (error) {
             router.push('/error?code=1')
@@ -128,10 +128,13 @@ const Messenger = () => {
     }, [])
 
     useEffect(()=> {
-        if(selectedConv){
+        let unsuscribed = false
+        if(selectedConv && !unsuscribed){
             fetchMessages() 
         }
-
+        return ()=> {
+            unsuscribed = true
+        }
     },[selectedConv])
 
 
@@ -162,7 +165,7 @@ const Messenger = () => {
         sm:bg-white sm:rounded-2xl shadow-2xl flex flex-col overflow-scroll overflow-x-hidden'>
         { !loadingMessages ? 
             messages?.map((element:any, index:any)=> 
-                <Message key={index}  message={element} scrollRef={scrollRef} selectedReceiver={selectedReceiver}/>
+                <Message key={index}  message={element} scrollRef={scrollRef}/>
             )
             :
             <div className='flex mt-20 justify-center items-center'>

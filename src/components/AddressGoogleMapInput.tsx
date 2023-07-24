@@ -1,9 +1,11 @@
+import { AddressGoogleMapInputPropsType, AddressType, SignUpFormType, SitterSignUpFormType } from '@/types/types';
 import React, { useState } from 'react'
+import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
 
 
-const AddressGoogleMapInput = ({setAddress, register, errors} : any) => {
-    const [validatorVariable, setValidatorVariable] = useState<any>(null)
+const AddressGoogleMapInput = ({setAddress, register, errors} : AddressGoogleMapInputPropsType) => {
+    const [validatorVariable, setValidatorVariable] = useState<boolean | null>(null)
     
     const {
         ready,
@@ -16,7 +18,7 @@ const AddressGoogleMapInput = ({setAddress, register, errors} : any) => {
         clearSuggestions
     } = usePlacesAutocomplete()
 
-    const checkStatus = () => {
+    const checkStatus = ():boolean => {
         if (validatorVariable) {
             return true
         }
@@ -28,8 +30,8 @@ const AddressGoogleMapInput = ({setAddress, register, errors} : any) => {
         clearSuggestions()
         const result = await getGeocode({address: val})
         const {lat, lng} = await getLatLng(result[0])
-        if(status === 'OK') setValidatorVariable(true)
-        setAddress({
+        if(status === 'OK') return setValidatorVariable(true)
+        return setAddress({
             address: val,
             latLng: {
               lat:lat,

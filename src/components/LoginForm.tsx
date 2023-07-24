@@ -1,19 +1,22 @@
 import React, { FormEvent, useContext, useRef, useState } from "react";
 import GoogleIcon from "../../public/icons8-google-1000.svg";
-import { UserContext } from "@/hooks/auth/authContext";
+import { UserContext, UserContextType } from "@/hooks/auth/authContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import { LoginFormPropsType } from "@/types/types";
 
-const LoginForm = ({ type }: any) => {
+
+const LoginForm = ({ type }: LoginFormPropsType) => {
   const mailRef = useRef<any>(type==='sitter' ? '' : null);
   const pswRef = useRef<HTMLInputElement | null>(null);
-  const { setUser, socket } = useContext(UserContext);
-  const [loading, setLoading] = useState(false);
+  const { setUser, socket } = useContext<UserContextType>(UserContext);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const handleLoginBtn = async (e: FormEvent) => {
+  
+  const handleLoginBtn = async (e: React.MouseEvent<HTMLButtonElement>) => {
     setLoading(true);
     e.preventDefault();
     const obj = {
@@ -21,7 +24,7 @@ const LoginForm = ({ type }: any) => {
       password: pswRef.current?.value,
     };
     try {
-      const response: any = await fetch(
+      const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`,
         {
           method: "POST",
@@ -60,7 +63,7 @@ const LoginForm = ({ type }: any) => {
     }
   };
 
-  const handleSittersLoginBtn = async(e:any) => {
+  const handleSittersLoginBtn = async(e:React.MouseEvent<HTMLButtonElement>) => {
     setLoading(true);
     e.preventDefault();
     const obj = {
@@ -108,7 +111,7 @@ const LoginForm = ({ type }: any) => {
   };
 
 
-  const handleGoogleBtn = async (e: FormEvent) => {
+  const handleGoogleBtn = async (e: React.MouseEvent<HTMLButtonElement>) => {
     setLoading(true);
     try {
       window.open(

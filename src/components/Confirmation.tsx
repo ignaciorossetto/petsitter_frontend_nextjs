@@ -9,14 +9,14 @@ import Swal from "sweetalert2";
 
 const Confirmation = () => {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
-  const email = searchParams.get("email");
-  const type = searchParams.get("type");
-  const [loading, setLoading] = useState(false);
-  const [reSendMailTick, setReSendMailTick] = useState(false)
+  const token:string | null = searchParams.get("token");
+  const email:string | null = searchParams.get("email");
+  const type:string | null = searchParams.get("type");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [reSendMailTick, setReSendMailTick] = useState<boolean>(false)
   const [errorMsg, setErrorMsg] = useState<boolean>(false);
-  const [message, setMessage] = useState("");
-  const [reSendBtn, setReSendBtn] = useState(false);
+  const [message, setMessage] = useState<string>("");
+  const [reSendBtn, setReSendBtn] = useState<boolean>(false);
 
   const handleResendEmailBtn = async() => {
     const obj = {email: email}
@@ -36,16 +36,13 @@ const Confirmation = () => {
 
   useEffect(() => {
     setLoading(true);
-    console.log(type)
       const checkAccount = async () => {
       const obj = {
         token: token,
         email: email,
         type: type || undefined
       };
-      console.log(obj)
       try {
-
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/checkAccount`,
           obj

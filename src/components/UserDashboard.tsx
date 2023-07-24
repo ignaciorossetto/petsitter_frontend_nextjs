@@ -1,41 +1,40 @@
 "use client"
-import { UserContext } from '@/hooks/auth/authContext'
+import { UserContext, UserContextType } from '@/hooks/auth/authContext'
 import {  faUser } from '@fortawesome/free-regular-svg-icons'
 import {  faCalendarPlus, faHouse, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import axios from 'axios'
 import Image from 'next/image'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Swal from 'sweetalert2'
 import {   useLoadScript } from "@react-google-maps/api";
 import { useForm } from 'react-hook-form';
 import AddressGoogleMapInput from './AddressGoogleMapInput'
+import { AddressType } from '@/types/types'
 
 
 
 const UserDashboard = () => {
-  const [messages, setMessages] = useState<any>([])
-    const [address, setAddress] = useState()
-  const {register, handleSubmit, watch, reset, setError, formState: { errors } } = useForm<any>()
-  const {user, setUser} = useContext(UserContext)
-  const [loadingProfileImg, setLoadingProfileImg] = useState(false)
-  const [loadingNewAddress, setLoadingNewAddress] = useState(false)
-  const [file, setFile] = useState(null)
+    const [address, setAddress] = useState<AddressType>()
+  const {register, handleSubmit, formState: { errors } } = useForm<any>()
+  const {user, setUser} = useContext<UserContextType>(UserContext)
+  const [loadingProfileImg, setLoadingProfileImg] = useState<boolean>(false)
+  const [loadingNewAddress, setLoadingNewAddress] = useState<boolean>(false)
+  const [file, setFile] = useState<File | Blob | null>(null)
   const [profileImg, setProfileImg] = useState(user?.profileImg)
-  console.log(user)
   const {isLoaded} = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
     libraries: ['places'],
 })
   
-  const handleOnChangeProfileImg = (e:any) => {
-    const img = e?.target?.files[0]
+  const handleOnChangeProfileImg = (e:React.ChangeEvent<HTMLInputElement>) => {
+    const img = e?.target?.files![0]
     setFile(img)
     const newImg = URL?.createObjectURL(img)
     setProfileImg(newImg)
   }
 
-  const handleConfirmNewProfileImg = async(e:any) => {
+  const handleConfirmNewProfileImg = async(e:React.MouseEvent<HTMLButtonElement>) => {
     setLoadingProfileImg(true)
     try {
         let formData:any = new FormData()
@@ -151,16 +150,6 @@ const UserDashboard = () => {
             </>
             }
     </div>
-
-
-    {
-              messages.map((e:any)=> {
-                console.log(e)
-                return <div key={e}>
-                  {e}
-                </div>
-              })
-             }
 
 
     <hr className="h-px my-8 bg-gray-200 border-1 dark:bg-gray-800"></hr>

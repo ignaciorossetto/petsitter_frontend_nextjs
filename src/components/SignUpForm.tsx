@@ -4,38 +4,16 @@ import {   useLoadScript } from "@react-google-maps/api";
 import AddressGoogleMapInput from '@/components/AddressGoogleMapInput';
 import axios from 'axios'
 import Swal from 'sweetalert2';
+import { AddressType, SignUpFormType, SignUpFormPropsType } from '@/types/types';
 
-interface Address {
-    address: string;
-    latLng: {
-      lat: number;
-      lng: number;
-    }
-  
-  }
-  
-  interface Form {
-    username: string;
-    password: string;
-    confirmPswd: string;
-    email: string;
-    confirmEmail: string;
-    fullAddress: Address;
-    type?: string;
-    newsCheckBox?: boolean;
-    termsCheckBock?: boolean;
-    pets?: Array<string>;
-    admin?: boolean;
-    profileImg?: string;
-    strategy: string;
-  }
+
 
  
 
-const SignUpForm = ({setSubmittingForm, setEmail, setSubmittedForm}:any) => {
-  const [address, setAddress] = useState()
-  const {register, handleSubmit, watch, reset, setError, formState: { errors } } = useForm<Form>()
-  const onSubmitHandler = async(values: Form) => {
+const SignUpForm = ({setSubmittingForm, setEmail, setSubmittedForm}:SignUpFormPropsType) => {
+  const [address, setAddress] = useState<AddressType>()
+  const {register, handleSubmit, watch, reset, setError, formState: { errors } } = useForm<SignUpFormType>()
+  const onSubmitHandler = async(values: SignUpFormType) => {
     values.fullAddress = address!
     values.strategy = 'local'
     try {

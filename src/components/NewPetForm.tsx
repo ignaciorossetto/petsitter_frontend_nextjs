@@ -1,6 +1,6 @@
 "use client"
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import {  useForm } from "react-hook-form";
+import {  FieldValues, useForm } from "react-hook-form";
 import { DateRange, DateRangeProps } from "react-date-range";
 import { format } from "date-fns";
 import "react-date-range/dist/styles.css"; // main css file
@@ -8,7 +8,7 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarDays } from '@fortawesome/free-regular-svg-icons';
 import axios from 'axios'
-import { UserContext } from '@/hooks/auth/authContext';
+import { UserContext, UserContextType } from '@/hooks/auth/authContext';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
@@ -25,7 +25,7 @@ interface FormValues {
   age: string;
   sex: string;
   size: string;
-  dates: DateInterface;
+  dates?: DateInterface | null;
   images: any;
   breed: string;
   desc: string;
@@ -33,11 +33,11 @@ interface FormValues {
 
 
 const NewPetForm = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const [loading, setLoading] = useState(false)
-  const {user, setUser, verifyAuth} = useContext(UserContext)
-  const [datesCheckbox, setDateCheckBox] = useState(true);
-  const [openCalendar, setOpenCalendar] = useState(false);
+  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
+  const [loading, setLoading] = useState<boolean>(false)
+  const {user, setUser, verifyAuth} = useContext<UserContextType>(UserContext)
+  const [datesCheckbox, setDateCheckBox] = useState<boolean>(true);
+  const [openCalendar, setOpenCalendar] = useState<boolean>(false);
   const formRef = useRef<HTMLFormElement>(null)
   const router = useRouter()
   const [date, setDate] = useState<DateInterface[]>([
@@ -65,7 +65,7 @@ useEffect(()=> {
     e.preventDefault()
     try {
     const formData = new FormData(formRef.current!);
-    const dates:any = datesCheckbox ? [format(date[0].startDate, "dd/MM/yyyy" ), format(date[0].endDate, "dd/MM/yyyy" )] : null
+    const dates = datesCheckbox ? [format(date[0].startDate, "dd/MM/yyyy" ), format(date[0].endDate, "dd/MM/yyyy" )] : null
     const milisecondDate:any = datesCheckbox ? Number(date[0].startDate) : null
     if (dates){
       formData?.append("dates", JSON.stringify(dates));

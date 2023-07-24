@@ -1,7 +1,6 @@
 "use client";
 import {
   faCommentDots,
-  faMessage,
   faUser,
   faXmarkCircle,
 } from "@fortawesome/free-regular-svg-icons";
@@ -15,23 +14,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import React, { useState, useContext, useEffect } from "react";
-import { UserContext } from "@/hooks/auth/authContext";
+import { UserContext, UserContextType } from "@/hooks/auth/authContext";
 import Image from "next/image";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { NavBarPropType } from "@/types/types";
 
-const NavBar = ({type}:any) => {
+const NavBar = ({type}:NavBarPropType) => {
   const searchParams = useSearchParams();
-  const googleLogin: any = searchParams.get("login-google");
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [showNavBarModal, setShowNavBarModal] = useState(false);
-  const { user, setUser, socket } = useContext(UserContext);
+  const googleLogin: string | null = searchParams.get("login-google");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showNavBarModal, setShowNavBarModal] = useState<boolean>(false);
+  const { user, setUser, socket } = useContext<UserContextType>(UserContext);
 
 
 
   const handleLogOutBtn = () => {
-    console.log('hitted')
     socket.current.emit('logout')
     setUser(null);
     document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -46,7 +45,7 @@ const NavBar = ({type}:any) => {
       title: 'Nos vemos pronto!'
     });
     if (type==='sitter') return router.push('/sitter');
-    router.push('/');
+    return router.push('/');
   };
 
   const getGoogleLoggedUserInfo = async () => {
@@ -176,7 +175,7 @@ const NavBar = ({type}:any) => {
                 Ingresar
           </Link>
           <Link 
-          href={`${type==='sitter' ? '/sitter/sign-up' : '/login'}`} 
+          href={`${type==='sitter' ? '/sitter/sign-up' : '/sign-up'}`} 
           className={`cursor-pointer hover:scale-110 duration-200 ${type==='sitter' ?  'bg-gradient-to-tr from-lime-400 to-emerald-300' : 'bg-violet-300' } p-4 font-semibold text-md rounded-lg`}>
             Registrar
           </Link> 

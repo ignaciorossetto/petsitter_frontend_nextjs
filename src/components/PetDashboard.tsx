@@ -1,18 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
-import { UserContext } from '@/hooks/auth/authContext'
+import { UserContext, UserContextType } from '@/hooks/auth/authContext'
 import { useRouter } from 'next/navigation'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faShop, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import Link from 'next/link'
 import Swal from 'sweetalert2'
 import PetCard from './PetCard'
+import { PetType } from '@/types/types'
 
 const PetDashboard = () => {
-    const {user, setUser, verifyAuth} = useContext(UserContext) 
-    const [loading, setLoading] = useState(true)
+    const {user, setUser, verifyAuth} = useContext<UserContextType>(UserContext) 
+    const [loading, setLoading] = useState<boolean>(true)
     const router = useRouter()
-    const display = async() => {
+    const display = async():Promise<void> => {
         const response = await verifyAuth()     
         if (response) {
             setLoading(false)
@@ -69,8 +70,8 @@ const PetDashboard = () => {
             }
             <div className='flex gap-10 flex-wrap justify-center'>
 
-        {!loading && user?.pets.map((e:any)=>
-            <PetCard key={e._id} handleDeletePetBtn={handleDeletePetBtn} e={e}/>
+        {!loading && user?.pets.map((petInfo:PetType)=>
+            <PetCard key={petInfo._id} handleDeletePetBtn={handleDeletePetBtn} petInfo={petInfo}/>
             )
         }
             {user?.pets.length === 0 && 

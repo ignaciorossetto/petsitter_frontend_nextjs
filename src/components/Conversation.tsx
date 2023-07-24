@@ -1,15 +1,19 @@
 "use client"
 import { UserContext } from '@/hooks/auth/authContext'
+import { ConversationPropsType, ConversationType } from '@/types/types'
 import { faUser } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import axios from 'axios'
 import Image from 'next/image'
 import React, { useContext, useEffect, useState } from 'react'
 
-const Conversation = ({type, conv, selectedConv, setSelectedConv, receiverID, setSelectedReceiver}:any) => {
+
+
+
+const Conversation = ({type, conv, selectedConv, setSelectedConv, receiverID, setSelectedReceiver}:ConversationPropsType) => {
     const {setReceiver} = useContext(UserContext)
     const [convInfo, setConvInfo] = useState<any>(null)
-    const fetchSitterInfo = async(url:any) => {
+    const fetchSitterInfo = async(url:string) => {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations${url}${receiverID}`, {withCredentials:true})
             setConvInfo(response?.data)   
@@ -29,7 +33,7 @@ const Conversation = ({type, conv, selectedConv, setSelectedConv, receiverID, se
   return (
     <div 
         onClick={()=>{
-            setSelectedConv(conv._id);
+            setSelectedConv(conv?._id);
             setSelectedReceiver(convInfo);
             setReceiver(convInfo)
             }} 

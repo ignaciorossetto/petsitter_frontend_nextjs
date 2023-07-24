@@ -1,15 +1,16 @@
 import { UserContext } from '@/hooks/auth/authContext'
+import { MessagePropsType, MessageType } from '@/types/types'
 import { faUser } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Image from 'next/image'
 import React, { useContext } from 'react'
 import {format} from 'timeago.js'
 
-const Message = ({message, scrollRef}:any) => {
-  const {user, receiver} = useContext(UserContext)
-  return (
-    
 
+const Message:React.FC<MessagePropsType> = ({message, scrollRef}: MessagePropsType) => {
+  const {user, receiver} = useContext(UserContext)
+  console.log(message)
+  return (
     <>
     <div className={`p-5 ${user?._id === message?.sender ? 'self-end' : 'self-start'} flex ${user?._id === message?.sender && 'flex-row-reverse'} gap-3 items-end`}>          
     
@@ -46,7 +47,7 @@ const Message = ({message, scrollRef}:any) => {
                 <div ref={scrollRef} />
     
     </div>
-    <div className={` px-3 mt-[-7px] ${user?._id === message?.sender ? 'self-end' : 'self-start'} ${user?._id === message?.sender && 'flex-row-reverse'} italic text-slate-400 `}>{format(message?.createdAt)}...</div>
+    <div className={` px-3 mt-[-7px] ${user?._id === message?.sender ? 'self-end' : 'self-start'} ${user?._id === message?.sender && 'flex-row-reverse'} italic text-slate-400 `}>{format(message?.createdAt!)}...</div>
     </>
   )
 }

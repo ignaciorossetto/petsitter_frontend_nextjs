@@ -10,12 +10,12 @@ const Error = () => {
 const searchParams = useSearchParams();
     let code: string | null | number = searchParams.get("code");
     const [error, setError] = useState<string | null>(null)
-    const [errorCode, setErrorCode] = useState(Number(code))
-    const [loading, setLoading] = useState(true)
-    const [email, setEmail] = useState('')
-    const [mailSent, setMailSent] = useState(false)
+    const [errorCode, setErrorCode] = useState<number>(Number(code))
+    const [loading, setLoading] = useState<boolean>(true)
+    const [email, setEmail] = useState<string>('')
+    const [mailSent, setMailSent] = useState<boolean>(false)
 
-    const handleSendEmail = async(e:any) => {
+    const handleSendEmail = async(e:React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         setLoading(true)
         setEmail('')
