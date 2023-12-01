@@ -30,14 +30,14 @@ const AddressGoogleMapInput = ({setAddress, register, errors} : AddressGoogleMap
         clearSuggestions()
         const result = await getGeocode({address: val})
         const {lat, lng} = await getLatLng(result[0])
-        if(status === 'OK') return setValidatorVariable(true)
+        if(status === 'OK') { setValidatorVariable(true)
         return setAddress({
             address: val,
             latLng: {
               lat:lat,
               lng:lng
             }
-          })
+          })}
     }
 
     return (

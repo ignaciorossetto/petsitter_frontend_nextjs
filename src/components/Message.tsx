@@ -9,7 +9,6 @@ import {format} from 'timeago.js'
 
 const Message:React.FC<MessagePropsType> = ({message, scrollRef}: MessagePropsType) => {
   const {user, receiver} = useContext(UserContext)
-  console.log(message)
   return (
     <>
     <div className={`p-5 ${user?._id === message?.sender ? 'self-end' : 'self-start'} flex ${user?._id === message?.sender && 'flex-row-reverse'} gap-3 items-end`}>          
@@ -19,11 +18,11 @@ const Message:React.FC<MessagePropsType> = ({message, scrollRef}: MessagePropsTy
                   
                   <div className='h-[50px] w-[50px] rounded-full relative'>
                     {
-                      receiver?.profileImg && 
+                      user?.profileImg && 
                     <Image alt='profileImg' src={user?.profileImg} fill className='absolut object-cover rounded-full'/> 
                     }
                     {
-                      !receiver?.profileImg && <FontAwesomeIcon icon={faUser} className='h-[35px] w-[35px]'/> 
+                      !user?.profileImg && <FontAwesomeIcon icon={faUser} className='h-[35px] w-[35px]'/> 
                     }
                   </div>
                 }

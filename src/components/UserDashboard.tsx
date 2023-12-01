@@ -5,18 +5,24 @@ import {  faCalendarPlus, faHouse, faSpinner } from '@fortawesome/free-solid-svg
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import axios from 'axios'
 import Image from 'next/image'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 import {   useLoadScript } from "@react-google-maps/api";
 import { useForm } from 'react-hook-form';
 import AddressGoogleMapInput from './AddressGoogleMapInput'
 import { AddressType } from '@/types/types'
+import useAuthRequest from '@/hooks/auth/useAuthRequest'
+import { useRouter } from 'next/navigation'
+import { newAddressRequest, newProfileImgRequest } from '@/utils/axiosRequests'
 
 
 
-const UserDashboard = () => {
+const UserDashboard = ({type}:{type:string}) => {
+  const jwt = localStorage.getItem("psf-jwt");
     const [address, setAddress] = useState<AddressType>()
+    const [loading, setLoading] = useState(false)
   const {register, handleSubmit, formState: { errors } } = useForm<any>()
+  const { verifyToken } = useAuthRequest()
   const {user, setUser} = useContext<UserContextType>(UserContext)
   const [loadingProfileImg, setLoadingProfileImg] = useState<boolean>(false)
   const [loadingNewAddress, setLoadingNewAddress] = useState<boolean>(false)
@@ -26,6 +32,24 @@ const UserDashboard = () => {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
     libraries: ['places'],
 })
+const router = useRouter()
+
+const display = async():Promise<void> => {
+  setLoading(true)
+  const response = await verifyToken()     
+  if (response) {
+      setLoading(false)
+      return
+  } else {
+    router.push('/error?code=1')
+    setLoading(false)
+  }
+}
+useEffect(()=> {
+  display()
+}, [])
+
+
   
   const handleOnChangeProfileImg = (e:React.ChangeEvent<HTMLInputElement>) => {
     const img = e?.target?.files![0]
@@ -39,13 +63,8 @@ const UserDashboard = () => {
     try {
         let formData:any = new FormData()
         formData.append('profileImg', file)
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${user._id}/profileImg`, formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            withCredentials: true
-        })
-        setUser(response.data)
+        const data = await newProfileImgRequest(jwt, formData, type, user._id)
+        setUser(data)
         setLoadingProfileImg(false)
     } catch (error) {
         setLoadingProfileImg(false)
@@ -64,13 +83,37 @@ const UserDashboard = () => {
 
 
   const onSubmitHandler = async() => {
-    const obj = {
-        fullAddress: address
-    }
+    const obj = type === 'sitter' ? {
+      location: {
+        type: "Point",
+        coordinates: [address?.latLng?.lng, address?.latLng?.lat],
+        address: address?.address
+      }
+    }:{ 
+      fullAddress: address}
+      setLoadingNewAddress(true)
+      try {
+        const data = await newAddressRequest(jwt, obj, user._id, type)
+        setUser(data)
+        setLoadingNewAddress(false)
+      } catch (error) {
+        setLoadingNewAddress(false)
+        Swal.fire({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            icon: "error",
+            title: `No se pudo cambiar el domicilio! Intenta mas tarde...`,
+          });
+      }
+
+    return
     setLoadingNewAddress(true)
     try {
-        const response = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${user._id}`, obj ,{withCredentials:true})
-        setUser(response.data)
+        const data = await axios.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/${user._id}`, obj ,{withCredentials:true})
+        setUser(data)
         setLoadingNewAddress(false)
     } catch (error) {
         setLoadingNewAddress(false)
@@ -86,6 +129,9 @@ const UserDashboard = () => {
     }
   }
 
+  if (loading ) {
+    return <FontAwesomeIcon size='2xl' style={{textAlign: 'center', width:'100%', marginBottom: 400, marginTop: 50}} icon={faSpinner} spin/> 
+  }
 
   return (
     <div className='flex flex-col'>
@@ -121,11 +167,20 @@ const UserDashboard = () => {
          <>
         <FontAwesomeIcon icon={faHouse} className='h-[150px] w-[150px]'/>
         <div className='flex flex-col gap-3'>
+          {type === 'user' && <>
             {user?.fullAddress?.address ? 
             <h1 className='text-xl font-semibold'>{user?.fullAddress?.address}</h1>
             :
             <h1 className='text-xl font-semibold'>No configuraste tu domicilio!</h1>
             }
+            </>}
+          {type === 'sitter' && <>
+            {user?.location?.address ? 
+            <h1 className='text-xl font-semibold'>{user?.location?.address}</h1>
+            :
+            <h1 className='text-xl font-semibold'>No configuraste tu domicilio!</h1>
+            }
+            </>}
             <form onSubmit={handleSubmit(onSubmitHandler)} className='flex flex-col gap-3'>
             {
             isLoaded &&

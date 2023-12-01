@@ -9,7 +9,7 @@ const Chat = (prop:any) => {
   return (
     <>
     <NavBar />
-    <Messenger />
+    <Messenger type='user'/>
     </>
   )
 }

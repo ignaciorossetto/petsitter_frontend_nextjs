@@ -5,12 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
-import { LoginFormPropsType } from "@/types/types";
+import { LoginFormPropsType, LoginFormType } from "@/types/types";
+import { loginRequest } from "@/utils/axiosRequests";
 
 
 const LoginForm = ({ type }: LoginFormPropsType) => {
-  const mailRef = useRef<any>(type==='sitter' ? '' : null);
-  const pswRef = useRef<HTMLInputElement | null>(null);
+  const mailRef = useRef<HTMLInputElement>(null);
+  const pswRef = useRef<HTMLInputElement>(null);
   const { setUser, socket } = useContext<UserContextType>(UserContext);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,33 +20,23 @@ const LoginForm = ({ type }: LoginFormPropsType) => {
   const handleLoginBtn = async (e: React.MouseEvent<HTMLButtonElement>) => {
     setLoading(true);
     e.preventDefault();
-    const obj = {
-      email: mailRef.current?.value,
-      password: pswRef.current?.value,
+    const obj: LoginFormType = {
+      email: mailRef.current!.value,
+      password: pswRef.current!.value,
     };
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify(obj),
-          credentials: "include",
-        }
-      );
-      const data = await response.json();
-      if (response.status === 401) {
+      const userType = type === 'sitter' ? 'sitter' : undefined;
+      const response = await loginRequest(obj, userType)
+      if (response?.status === 401) {
         setError("Error en usuario/contraseña");
         setLoading(false);
         return;
       }
-      if (!data?.payload?.confirmedAccount) {
+      if (!response?.data?.payload?.confirmedAccount) {
         return router.push("/error?code=3");
       }
-      setUser(data.payload);
-      socket.current.emit("identity", data.payload._id);
+      setUser(response.data.payload);
+      socket.current.emit("identity", response?.data?.payload?._id);
 
       Swal.fire({
         toast: true,
@@ -54,56 +45,11 @@ const LoginForm = ({ type }: LoginFormPropsType) => {
         timer: 3000,
         timerProgressBar: true,
         icon: "success",
-        title: `Bienvenido ${data?.payload?.username}!`,
+        title: `Bienvenido ${response?.data?.payload?.username}!`,
       });
-      router.push("/");
-    } catch (error: any) {
-      setError(error?.message);
-      setLoading(false);
-    }
-  };
-
-  const handleSittersLoginBtn = async(e:React.MouseEvent<HTMLButtonElement>) => {
-    setLoading(true);
-    e.preventDefault();
-    const obj = {
-      email: mailRef.current?.value,
-      password: pswRef.current?.value,
-    };
-    try {
-      const response: any = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/sitter-login`,
-        {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify(obj),
-          credentials: "include",
-        }
-      );
-      const data = await response.json();
-      if (response.status === 401) {
-        setError("Error en usuario/contraseña");
-        setLoading(false);
-        return;
-      }
-      if (!data?.payload?.confirmedAccount) {
-        return router.push("/error?code=3");
-      }
-      setUser(data.payload);
-      socket.current.emit("identity", data.payload._id);
-
-      Swal.fire({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: "success",
-        title: `Bienvenido ${data?.payload?.username}!`,
-      });
-      router.push("/sitter");
+      localStorage.setItem('psf-jwt', response?.data?.token);
+      const url = type === 'sitter' ? `/sitter` : `/`
+      router.push(url);
     } catch (error: any) {
       setError(error?.message);
       setLoading(false);
@@ -172,21 +118,13 @@ const LoginForm = ({ type }: LoginFormPropsType) => {
               />
               <br />
               <br />
-              {type === "sitter" ? (
                 <button
-                  className="w-full bg-green-800 bg-left-top bg-cover text-white font-semibold text-xl p-3 rounded-2xl shadow-2xl hover:scale-105 duration-200"
-                  onClick={handleSittersLoginBtn}
-                >
-                  Iniciar sesión
-                </button>
-              ) : (
-                <button
-                  className="w-full bg-violet-200 bg-left-top bg-cover text-black font-semibold text-xl p-3 rounded-2xl shadow-2xl hover:scale-105 duration-200"
+                  className={`w-full ${type === 'sitter' ? 'bg-green-800 text-white' : 'bg-violet-200 text-black'}
+                    bg-left-top bg-cover font-semibold text-xl p-3 rounded-2xl shadow-2xl hover:scale-105 duration-200`}
                   onClick={handleLoginBtn}
                 >
                   Iniciar sesión
                 </button>
-              )}
 
               <br />
             </form>

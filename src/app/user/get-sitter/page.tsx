@@ -10,6 +10,8 @@ import { UserContext } from '@/hooks/auth/authContext'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { SitterContext } from '@/hooks/auth/sitterContext'
+import { createOrGetConversation, getSittersNearBy } from '@/utils/axiosRequests'
+import { GeoLocSittersInfoType } from '@/types/types'
 
 function haversine_distance(mk1:any, mk2:any) {
     var R = 6371.0710; // Radius of the Earth in miles
@@ -23,6 +25,7 @@ function haversine_distance(mk1:any, mk2:any) {
   }
 
 const GetSitterView = () => {
+    const jwt = localStorage.getItem('psf-jwt')
     const [isSiblingComponentActive, setSiblingComponentActive] = useState(false);
     const [sitterInfo, setSitterInfo] = useState<any>(null)
     const [setSitterInfoBool, setsetSitterInfoBool] = useState(false)
@@ -37,20 +40,20 @@ const GetSitterView = () => {
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
         libraries: ['places'],
     })
+    const [radius, setRadius] = useState(3000)
 
     const handleContactSitterBtn = async() => {
         setLoadingSitterContact(true)
-        const obj = {
-            receiverId: sitterInfo._id,
-            senderId: user._id
+        const obj: object = {
+            receiverId: sitterInfo._id as string,
+            senderId: user._id as string
         }
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations`, obj, {withCredentials:true})
-            const sitterID = response.data.members.filter((e:any)=> e !== user._id)
-            router.push(`/user/chat?cid=${response.data._id}&sid=${sitterID[0]}`)
+            const data = await createOrGetConversation(jwt, obj)
+            const sitterID = data.members.filter((e:any)=> e !== user._id)
+            router.push(`/user/chat?cid=${data._id}&sid=${sitterID[0]}`)
             setLoadingSitterContact(false)
         } catch (error) {
-            console.log(error)
             router.push(`/error?code=1`)
             setLoadingSitterContact(false)
         }
@@ -67,10 +70,15 @@ const GetSitterView = () => {
     }), [])
 
     const getSitters = async() => {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/sitters/getSittersNearby?radius=3000&lat=${center.lat}&lng=${center.lng}`)
+        const obj:GeoLocSittersInfoType = {
+            lat: center.lat ,
+            lng: center.lng ,
+            radius: radius || 3000 
+        }
+        const data = await getSittersNearBy(jwt, obj)
         let _sitters = [] 
-        for (let i = 0; i < response?.data?.payload?.length; i++) {
-            const element = response?.data?.payload[i];
+        for (let i = 0; i < data?.payload?.length; i++) {
+            const element = data?.payload[i];
             const distance = haversine_distance(center, {lat: element?.location?.coordinates[1], lng: element?.location?.coordinates[0]},)
             element.distance_to_center = distance.toFixed()
             _sitters.push(element)
@@ -92,7 +100,7 @@ const GetSitterView = () => {
         setLoading(true)
         getSitters()
         setUserMarker(center)
-    }, [])
+    }, [radius])
 
     const handleSitterCard = (sitter:any) => {
         setSitterInfo(sitter)
@@ -109,7 +117,21 @@ const GetSitterView = () => {
         {isLoaded && 
         <div className='h-full w-full flex flex-col-reverse sm:flex-row'>
             <div className='h-[400px] sm:h-[80vh] sm:w-[30%] bg-violet-200 overflow-scroll overflow-x-hidden mt-3 sm:mt-0 shadow-2xl'>
+                <div className='flex flex-col md:flex-row gap-2 md:gap-5 justify-center items-center h-[130px] md:h-[100px] p-2'>
                 <h1 className='text-center font-medium text-2xl p-3'>Sitters cerca</h1>
+ 
+                <select 
+                className='text-sm lg:text-lg p-1 lg:p-3 align-bottom h-fit rounded-lg font-semibold'
+                onChange={(e)=> setRadius(parseInt(e.target.value))} name="radius" id="">
+                    <option value={1000}>1km</option>
+                    <option value={2000}>2km</option>
+                    <option selected value={3000}>3km</option>
+                    <option value={4000}>4km</option>
+                    <option value={5000}>5km</option>
+                    <option value={10000}>10km</option>
+                    <option value={20000}>20km</option>
+                </select>
+                </div>
                 {sitters.map((e:any)=> 
                     <div id={`aa-${e?._id}`}  onClick={()=>{
                     handleSitterCard(e)

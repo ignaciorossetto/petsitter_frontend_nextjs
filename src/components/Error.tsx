@@ -24,7 +24,6 @@ const searchParams = useSearchParams();
             setMailSent(true)
             setLoading(false)
         } catch (error:any) {
-            console.log(error?.response?.data.message)
             if (error?.response?.status === 404 || error?.response?.status === 400) {
                 Swal.fire({
                     toast: true,

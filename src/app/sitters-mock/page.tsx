@@ -27,7 +27,6 @@ const Sitters = () => {
       otherUserId: ownerId,
       message: input
   }
-        console.log(obj)
         socket.current.emit('sendMessage', socketObj)
         setMessages([...messages, input])
         setInput('')
@@ -36,7 +35,6 @@ const Sitters = () => {
   useEffect(()=> {
     socket.current= socketio(`http://localhost:5000`, {withCredentials:true})
     socket.current.on('getMessage', (data:any)=> {
-      console.log(data)
       setMessages([...messages, data.message])
   })
   },[messages])

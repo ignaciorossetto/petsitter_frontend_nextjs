@@ -8,15 +8,21 @@ import Link from 'next/link'
 import Swal from 'sweetalert2'
 import PetCard from './PetCard'
 import { PetType } from '@/types/types'
+import useAuthRequest from '@/hooks/auth/useAuthRequest'
 
 const PetDashboard = () => {
-    const {user, setUser, verifyAuth} = useContext<UserContextType>(UserContext) 
+    const {user, setUser} = useContext<UserContextType>(UserContext) 
+    const { verifyToken } = useAuthRequest()
     const [loading, setLoading] = useState<boolean>(true)
     const router = useRouter()
+
     const display = async():Promise<void> => {
-        const response = await verifyAuth()     
+        const response = await verifyToken()     
         if (response) {
             setLoading(false)
+            return
+        } else {
+          router.push('/error?code=1')
         }
     }
     useEffect(()=> {
@@ -46,7 +52,6 @@ const PetDashboard = () => {
                 setLoading(false)
               setUser(response.data.payload)
               } catch (error) {
-                console.log(error)
                 setLoading(false)
                 router.push('/error?code=3')
               }

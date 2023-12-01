@@ -120,4 +120,15 @@ export type PetType = {
     strategy: string;
   }
 
+export type JWTtype = string | null
+
+export type GeoLocSittersInfoType = {
+    lat: string;
+    lng: string;
+    radius: number;
+}
+export type LoginFormType = {
+    email: string;
+    password: string;
+}
 

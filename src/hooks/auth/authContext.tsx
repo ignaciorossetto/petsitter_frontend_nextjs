@@ -1,20 +1,20 @@
 "use client"
-import { createContext, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import axios from 'axios'
 import { useRouter } from "next/navigation";
 import socketio from "socket.io-client";
-
-
+import config from "@/utils/config";
 
 
 
 export type UserContextType = {
     user: any;
     setUser: any;
-    verifyAuth: any;
     socket: any;
     receiver: any;
     setReceiver: any;
+    setAuthJWT:any;
+    authJWT:any
 }
 
 type UserContextProviderType = {
@@ -26,24 +26,22 @@ export const UserContext = createContext({} as UserContextType)
 
 
 export const UserContextProvider = ({children}: UserContextProviderType) => {
-    const socket = useRef<any>(socketio(`${process.env.NEXT_PUBLIC_BACKEND_URL}`, {
+
+    const socket = useRef<any>(socketio(`${config.backendUrl}`, {
         withCredentials:true,
         reconnection:false
     }))
-    const router = useRouter()
-    const [user, setUser] = useState<any | null>(null)
+    const storedUser = localStorage.getItem("psf-user");
+    const initialUser = storedUser !== 'undefined' && storedUser !== null ? JSON.parse(storedUser) : null;
+    const [user, setUser] = useState(initialUser);
+    const [authJWT, setAuthJWT] = useState<string | null>(null)
     const [receiver, setReceiver] = useState<any | null>(null)
-    const verifyAuth = async() => {
-            try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/checkauth`, {withCredentials: true})
-                return true
-            } catch (error) {
-                setUser(null)
-                document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; 
-                router.push('/error?code=1')
-                return false
-            }
-        } 
+
+    useEffect(()=> {
+        localStorage.setItem("psf-user", JSON.stringify(user))
+    }, [user])
+
+
     
-    return <UserContext.Provider value={{user, setUser, verifyAuth, socket, receiver, setReceiver}}>{children}</UserContext.Provider>
+    return <UserContext.Provider value={{user, setUser, socket, receiver, setReceiver, setAuthJWT, authJWT}}>{children}</UserContext.Provider>
 }

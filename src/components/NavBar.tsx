@@ -70,6 +70,7 @@ const NavBar = ({type}:NavBarPropType) => {
     }
   };
 
+
   useEffect(() => {
     if (googleLogin) {
         setLoading(true);
