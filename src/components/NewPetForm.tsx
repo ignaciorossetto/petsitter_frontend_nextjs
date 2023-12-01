@@ -12,6 +12,7 @@ import { UserContext, UserContextType } from '@/hooks/auth/authContext';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import useAuthRequest from '@/hooks/auth/useAuthRequest';
 
 interface DateInterface {
   startDate: Date,
@@ -34,8 +35,9 @@ interface FormValues {
 
 const NewPetForm = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
+  const { verifyToken } = useAuthRequest();
   const [loading, setLoading] = useState<boolean>(false)
-  const {user, setUser, verifyAuth} = useContext<UserContextType>(UserContext)
+  const {user, setUser } = useContext<UserContextType>(UserContext)
   const [datesCheckbox, setDateCheckBox] = useState<boolean>(true);
   const [openCalendar, setOpenCalendar] = useState<boolean>(false);
   const formRef = useRef<HTMLFormElement>(null)
@@ -48,17 +50,22 @@ const NewPetForm = () => {
     },
   ]);
 
-  const display = async() => {
-    const response = await verifyAuth()     
+  const display = async (): Promise<void> => {
+    setLoading(true);
+    const response = await verifyToken();
     if (response) {
-        setLoading(false)
+      setLoading(false);
+      return;
+    } else {
+      router.push("/error?code=1");
+      setLoading(false);
     }
-}
+  };
+  useEffect(() => {
+    display();
+  }, []);
 
-useEffect(()=> {
-    setLoading(true)
-    display()
-}, [])
+
 
   const onSubmit = async (data: any, e: any) => {
     setLoading(true)
