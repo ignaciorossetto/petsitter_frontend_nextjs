@@ -31,11 +31,16 @@ export const UserContextProvider = ({children}: UserContextProviderType) => {
         withCredentials:true,
         reconnection:false
     }))
-    const storedUser = localStorage.getItem("psf-user");
-    const initialUser = storedUser !== 'undefined' && storedUser !== null ? JSON.parse(storedUser) : null;
-    const [user, setUser] = useState(initialUser);
+    
+    const [user, setUser] = useState();
     const [authJWT, setAuthJWT] = useState<string | null>(null)
     const [receiver, setReceiver] = useState<any | null>(null)
+
+    useEffect(()=> {
+        const storedUser = localStorage.getItem("psf-user");
+        const initialUser = storedUser !== 'undefined' && storedUser !== null ? JSON.parse(storedUser) : null;
+        setUser(initialUser)
+    }, [])
 
     useEffect(()=> {
         localStorage.setItem("psf-user", JSON.stringify(user))
