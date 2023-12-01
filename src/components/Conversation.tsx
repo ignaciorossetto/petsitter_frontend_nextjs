@@ -11,11 +11,12 @@ import React, { useContext, useEffect, useState } from 'react'
 
 
 const Conversation = ({type, conv, selectedConv, setSelectedConv, receiverID, setSelectedReceiver}:ConversationPropsType) => {
-    const jwt = localStorage.getItem('psf-jwt')
+    
     const {setReceiver} = useContext(UserContext)
     const [convInfo, setConvInfo] = useState<any>(null)
     const fetchSitterInfo = async(url:string) => {
         try {
+            const jwt = localStorage.getItem('psf-jwt')
             const data = await getConversationInfo(jwt, url, receiverID)
             setConvInfo(data)   
         } catch (error) {

@@ -25,7 +25,6 @@ function haversine_distance(mk1:any, mk2:any) {
   }
 
 const GetSitterView = () => {
-    const jwt = localStorage.getItem('psf-jwt')
     const [isSiblingComponentActive, setSiblingComponentActive] = useState(false);
     const [sitterInfo, setSitterInfo] = useState<any>(null)
     const [setSitterInfoBool, setsetSitterInfoBool] = useState(false)
@@ -49,6 +48,7 @@ const GetSitterView = () => {
             senderId: user._id as string
         }
         try {
+            const jwt = localStorage.getItem('psf-jwt')
             const data = await createOrGetConversation(jwt, obj)
             const sitterID = data.members.filter((e:any)=> e !== user._id)
             router.push(`/user/chat?cid=${data._id}&sid=${sitterID[0]}`)
@@ -75,6 +75,7 @@ const GetSitterView = () => {
             lng: center.lng ,
             radius: radius || 3000 
         }
+        const jwt = localStorage.getItem('psf-jwt')
         const data = await getSittersNearBy(jwt, obj)
         let _sitters = [] 
         for (let i = 0; i < data?.payload?.length; i++) {
