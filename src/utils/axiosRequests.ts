@@ -147,3 +147,15 @@ export const newAddressRequest = async(jwt: JWTtype, obj:any,  id:string, type:s
 }
 
 
+export const getGoogleLoggedInUserInfo = async(jwt: JWTtype) => {
+  const axiosInstance = createAxiosInstance(jwt)
+  const url = 'api/auth/google/login'
+  try {
+    const response = await axiosInstance.get(url)
+    return response.data
+  } catch (error) {
+     throw new Error()
+  }
+}
+
+

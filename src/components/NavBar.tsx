@@ -19,11 +19,13 @@ import Image from "next/image";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { NavBarPropType } from "@/types/types";
+import { getGoogleLoggedInUserInfo } from "@/utils/axiosRequests";
 
 const NavBar = ({type}:NavBarPropType) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const googleLogin: string | null = searchParams.get("login-google");
+  const access_token: string | null = searchParams.get("access_token");
   const [loading, setLoading] = useState<boolean>(false);
   const [showNavBarModal, setShowNavBarModal] = useState<boolean>(false);
   const { user, setUser, socket } = useContext<UserContextType>(UserContext);
@@ -33,7 +35,7 @@ const NavBar = ({type}:NavBarPropType) => {
   const handleLogOutBtn = () => {
     socket.current.emit('logout')
     setUser(null);
-    document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    localStorage.setItem('psf-jwt', '')
     
     Swal.fire({
       toast: true,
@@ -50,10 +52,9 @@ const NavBar = ({type}:NavBarPropType) => {
 
   const getGoogleLoggedUserInfo = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google/login`, {withCredentials:true}
-      );
-      setUser(response.data.payload);
+      const {payload} = await getGoogleLoggedInUserInfo(access_token)
+      localStorage.setItem('psf-jwt', access_token || '')
+      setUser(payload);
       setLoading(false);
       Swal.fire({
         toast: true,
@@ -62,9 +63,9 @@ const NavBar = ({type}:NavBarPropType) => {
         timer: 3000,
         timerProgressBar: true,
         icon: "success",
-        title: `Bienvenido ${response.data.payload.username}!`,
+        title: `Bienvenido ${payload.username}!`,
       });
-      socket.current.emit("identity", response.data.payload._id);
+      socket.current.emit("identity", payload._id);
     } catch (error) {
       router.push("/error?code=1");
     }
