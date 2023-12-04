@@ -10,7 +10,7 @@ import React, { useContext, useEffect, useState } from 'react'
 
 
 
-const Conversation = ({type, conv, selectedConv, setSelectedConv, receiverID, setSelectedReceiver}:ConversationPropsType) => {
+const Conversation = ({type, conv, selectedConv, setSelectedConv, receiverID, setSelectedReceiver, setOpenCreateOrder}:ConversationPropsType) => {
     
     const {setReceiver} = useContext(UserContext)
     const [convInfo, setConvInfo] = useState<any>(null)
@@ -38,6 +38,7 @@ const Conversation = ({type, conv, selectedConv, setSelectedConv, receiverID, se
             setSelectedConv(conv?._id);
             setSelectedReceiver(convInfo);
             setReceiver(convInfo)
+            setOpenCreateOrder(false)
             }} 
         className={`p-5 w-[91%] sm:w-full bg-white/20 sm:bg-transparent
         ${conv._id === selectedConv ? 

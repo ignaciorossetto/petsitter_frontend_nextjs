@@ -5,3 +5,11 @@
 body {
   @apply max-w-[90%] w-[1080px] mx-auto;
 }
+
+.scale-animation {
+  @apply hover:scale-110 active:scale-100 transition-all duration-200;
+}
+
+.p-btn {
+  @apply px-3 py-2 rounded-xl
+}

@@ -13,12 +13,9 @@ import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import useAuthRequest from '@/hooks/auth/useAuthRequest';
+import { DateInterface } from '@/types/types';
 
-interface DateInterface {
-  startDate: Date,
-  endDate: Date,
-  key: string
-}
+
 
 interface FormValues {
   name: string;
@@ -47,6 +44,7 @@ const NewPetForm = () => {
       startDate: new Date(),
       endDate: new Date(),
       key: "selection",
+      selected: false
     },
   ]);
 

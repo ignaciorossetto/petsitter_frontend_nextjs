@@ -32,7 +32,8 @@ export type ConversationPropsType = {
     setSelectedReceiver: React.Dispatch<string>,
     selectedConv: string,
     setSelectedConv:React.Dispatch<string>,
-    receiverID: string[]
+    receiverID: string[],
+    setOpenCreateOrder: React.Dispatch<boolean>
 }
 
 export type PetType = {
@@ -132,3 +133,9 @@ export type LoginFormType = {
     password: string;
 }
 
+export interface DateInterface {
+  startDate: Date,
+  endDate: Date,
+  key: string,
+  selected: boolean
+}

@@ -16,7 +16,6 @@ import Link from "next/link";
 import React, { useState, useContext, useEffect } from "react";
 import { UserContext, UserContextType } from "@/hooks/auth/authContext";
 import Image from "next/image";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { NavBarPropType } from "@/types/types";
 import { getGoogleLoggedInUserInfo } from "@/utils/axiosRequests";
@@ -94,7 +93,7 @@ const NavBar = ({type}:NavBarPropType) => {
           <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
         </svg>
       </div>
-      <h1 className="relative flex gap-2 items-center justify-center text font-semibold  text-2xl md:text-3xl tracking-widest cursor-pointer text-orange-800">
+      <h1 className="relative flex gap-2 items-center justify-center font-semibold text-xl sm:text-2xl md:text-3xl tracking-widest cursor-pointer text-orange-800">
         <Link href={type === 'sitter' ? '/sitter' : '/'}>PetSitterFinder</Link>
         {type==='sitter' && <p className="absolute top-[28px] right-0 text-md italic font-light text-green-900">Sitters</p>}
         <FontAwesomeIcon icon={faPaw} size="lg"/>

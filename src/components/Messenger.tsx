@@ -18,6 +18,7 @@ import {
   postMessage,
 } from "@/utils/axiosRequests";
 import axios from "axios";
+import OrderModal from "./OrderModal";
 
 const Messenger = ({ type = "user" }: { type: string }) => {
   const jwt = localStorage.getItem("psf-jwt");
@@ -33,6 +34,7 @@ const Messenger = ({ type = "user" }: { type: string }) => {
   const [loadingConversationsMenu, setLoadingConversationsMenu] =
     useState(false);
   const [msgBox, setMsgBox] = useState("");
+  const [openCreateOrder, setOpenCreateOrder] = useState(false)
   const scrollRef = useRef<HTMLDivElement | undefined>();
   const { verifyToken } = useAuthRequest();
 
@@ -78,7 +80,7 @@ const Messenger = ({ type = "user" }: { type: string }) => {
   }, [arrivalMessage, selectedConv, selectedReceiver]);
 
   const handleSendMsgEnter = async (
-    e: React.KeyboardEvent<HTMLInputElement>
+    e: React.KeyboardEvent<HTMLTextAreaElement>
   ) => {
     if (e.key !== "Enter") {
       return;
@@ -195,6 +197,7 @@ const Messenger = ({ type = "user" }: { type: string }) => {
               selectedConv={selectedConv}
               setSelectedConv={setSelectedConv}
               receiverID={e?.members.filter((e: any) => e !== user?._id)}
+              setOpenCreateOrder={setOpenCreateOrder}
             />
           ))
         ) : (
@@ -214,10 +217,24 @@ const Messenger = ({ type = "user" }: { type: string }) => {
       type === "sitter"
         ? "sm:bg-gradient-to-tr from-lime-400 to-emerald-300"
         : "bg-white sm:bg-violet-300"
-    } sm:p-10 sm:flex flex-col gap-4 none`}
+    } sm:p-10 sm:flex flex-col gap-4 none relative`}
       >
+        {openCreateOrder && 
+        <div className="bg-white z-[2] w-full rounded-xl">
+          <OrderModal setOpenCreateOrder={setOpenCreateOrder} sitterId={user._id} user={selectedReceiver}/>
+        </div>
+        }
+        {
+          !openCreateOrder && 
+        <button 
+        onClick={()=> setOpenCreateOrder((prev)=> !prev)}
+        className="py-2 px-3 font-bold bg-white rounded-xl w-fit text-start"
+        >
+                Crear propuesta
+        </button>
+        }
         <div className="w-full h-[85%] bg-violet-100 sm:rounded-2xl shadow-2xl  flex flex-col overflow-scroll overflow-x-hidden overflow-y-hidden">
-          <div className="flex sm:hidden gap-5 justify-around items-center p-5 bg-white/100 mb-5">
+          <div className="flex sm:hidden gap-5 justify-between items-center p-5 bg-white/100 mb-5">
             <FontAwesomeIcon
               icon={faArrowLeft}
               size="xl"
@@ -225,14 +242,21 @@ const Messenger = ({ type = "user" }: { type: string }) => {
               onClick={() => setSelectedConv(null)}
             />
             <h1 className="font-bold text-xl">{selectedReceiver?.username}</h1>
+            <div>
+              <button onClick={()=> setOpenCreateOrder((prev)=> !prev)}>
+                Crear propuesta
+              </button>
+            </div>
           </div>
+          {
+            !openCreateOrder && 
           <div
-            className={`w-full h-full ${type === 'sitter' ? 'bg-white' : 'bg-violet-100 sm:bg-white'} sm:rounded-2xl shadow-2xl  flex flex-col overflow-scroll overflow-x-hidden`}
+          className={`w-full h-full ${type === 'sitter' ? 'bg-white' : 'bg-violet-100 sm:bg-white'} sm:rounded-2xl shadow-2xl  flex flex-col overflow-scroll overflow-x-hidden`}
           >
             {!loadingMessages ? (
               messages?.map((element: any, index: any) => (
                 <Message key={index} message={element} scrollRef={scrollRef} />
-              ))
+                ))
             ) : (
               <div className="flex mt-20 justify-center items-center">
                 <FontAwesomeIcon
@@ -240,32 +264,37 @@ const Messenger = ({ type = "user" }: { type: string }) => {
                   size="2xl"
                   spin
                   className="w-16 h-16"
-                />
+                  />
               </div>
             )}
           </div>
+          }
         </div>
-        <div className="w-full h-[15%] flex gap-3 relative">
-          <input
+
+        {
+          !openCreateOrder && 
+          
+          <div className="w-full h-[15%] flex gap-3">
+          <textarea
             value={msgBox}
             onKeyDown={handleSendMsgEnter}
             placeholder="Escribe aqui...."
             onChange={(e) => setMsgBox(e.target.value)}
-            type="text"
             name="message"
-            className={`w-full sm:w-[80%] p-2 ${type === 'sitter' ? 'bg-white' : 'bg-violet-100 sm:bg-white '}
-              sm:rounded-2xl shadow-2xl sm:p-5 text-lg font-medium`}
+            className={`w-[85%] sm:w-[80%] p-2 ${type === 'sitter' ? 'bg-white' : 'bg-violet-100 sm:bg-white '}
+              sm:rounded-2xl shadow-2xl sm:p-5 text-lg font-medium resize-none`}
           />
           <div
             onClick={handleSendMsg}
-            className={`absolute top-5 right-0 sm:relative sm:top-auto sm:right-auto sm:flex w-[50px] sm:w-[20%] sm:h-full ${type !== 'sitter' ? 'bg-lime-300/75' : ''} rounded-full mr-2 mb-2 sm:m-0 shadow-2xl  p-2 sm:p-5 justify-center items-center hover:scale-105 sm:hover:scale-110 duration-200 cursor-pointer`}
+            className={`w-[15%] flex sm:w-[20%] sm:h-full ${type !== 'sitter' ? 'bg-lime-300/75' : ''} rounded-full mr-2 mb-2 sm:m-0 shadow-2xl  p-2 sm:p-5 justify-center items-center hover:scale-105 sm:hover:scale-110 duration-200 cursor-pointer`}
           >
             <FontAwesomeIcon
               icon={faPaw}
-              className="text-orange-800 w-8 h-8 absolut "
+              className="text-orange-800 w-8 h-8"
             />
           </div>
         </div>
+          }
       </div>
     </section>
   );

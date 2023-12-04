@@ -19,6 +19,7 @@ module.exports = {
         whatsapp: '#25d366'
       },
       screens:{
+        xxs: "400px",
         xs: "517px",
       },
       animation: {
