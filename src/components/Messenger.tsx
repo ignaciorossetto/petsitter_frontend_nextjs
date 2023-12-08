@@ -15,13 +15,28 @@ import useAuthRequest from "@/hooks/auth/useAuthRequest";
 import {
   getConversations,
   getMessages,
+  getPendingOngoingCareOrder,
   postMessage,
 } from "@/utils/axiosRequests";
 import axios from "axios";
 import OrderModal from "./OrderModal";
+import Swal from "sweetalert2";
+import { json } from "stream/consumers";
+import { calculateAmountOfDays } from "@/utils/utilsFunctions";
+
+
+type SitterProposalType = {
+    totalOfDays: number;
+    totalPrice: number;
+    userId: string;
+    sitterId: string;
+    startDate: string;
+    endDate: string;
+
+}
+
 
 const Messenger = ({ type = "user" }: { type: string }) => {
-  const jwt = localStorage.getItem("psf-jwt");
   const { user, socket } = useContext(UserContext);
   const searchParams = useSearchParams();
   let [messages, setMessages] = useState<MessageType[]>([]);
@@ -37,6 +52,14 @@ const Messenger = ({ type = "user" }: { type: string }) => {
   const [openCreateOrder, setOpenCreateOrder] = useState(false)
   const scrollRef = useRef<HTMLDivElement | undefined>();
   const { verifyToken } = useAuthRequest();
+  const [sitterProposal, setSitterProposal] = useState<SitterProposalType | null>(null)
+  const [openSitterProposal, setOpenSitterProposal] = useState(false)
+
+  const handleConfirm = () => {
+    // Handle navigation here
+    router.push('/user/pets'); // Replace with your desired route
+  };
+
 
   const display = async (): Promise<void> => {
     setLoadingConversationsMenu(true);
@@ -68,6 +91,51 @@ const Messenger = ({ type = "user" }: { type: string }) => {
       });
     });
   }, [socket]);
+  useEffect(() => {
+    socket.current.on("getProposal", (data: any) => {
+      Swal.fire({
+        html: `
+        <h1 id="toastTitle">Nueva propuesta de cuidado recibida!</h1> 
+        <button 
+        id="customButton"
+        >
+        Ver
+        </button>`,
+        toast: true,
+        position: 'top-right',
+        showCloseButton: false,
+        showConfirmButton: false,
+        timer: 3000,
+        didOpen: () => {
+          // Attach a click event to the custom button
+          const customButton = document.getElementById('customButton');
+          const toastTitle = document.getElementById('toastTitle');
+          if (customButton) {
+            customButton.addEventListener('click', handleConfirm);
+            customButton.style.padding = '10px';
+            customButton.style.fontSize = '18px';
+            customButton.style.color = 'white';
+            customButton.style.backgroundColor = 'purple';
+            customButton.style.borderRadius = '20px';
+            customButton.style.fontWeight = 'bold';
+            toastTitle!.style.fontWeight = 'bold';
+            toastTitle!.style.fontSize = '22px';
+            toastTitle!.style.marginBottom = '5px';
+          }
+        },
+      });
+      const dates = data?.message?.dates
+      console.log(data.message.sitterId)
+      setSitterProposal({
+        startDate: new Date(dates[0]).toLocaleDateString(),
+        endDate: new Date(dates[1]).toLocaleDateString(),
+        totalOfDays: data.message.totalOfDays,
+        totalPrice: data.message.totalPrice,
+        userId: data.message.userId,
+        sitterId: data.message.sitterId
+      });
+    });
+  }, [socket]);
 
   // Conditions to set displayed messages
   useEffect(() => {
@@ -96,6 +164,7 @@ const Messenger = ({ type = "user" }: { type: string }) => {
       message: msgBox,
     };
     try {
+      const jwt = localStorage.getItem("psf-jwt");
       socket.current.emit("sendMessage", socketObj);
       await postMessage(jwt, obj);
       setMessages([...messages, obj]);
@@ -118,6 +187,7 @@ const Messenger = ({ type = "user" }: { type: string }) => {
       message: msgBox,
     };
     try {
+      const jwt = localStorage.getItem("psf-jwt");
       socket.current.emit("sendMessage", socketObj);
       await postMessage(jwt, obj);
       setMessages([...messages, obj]);
@@ -131,6 +201,7 @@ const Messenger = ({ type = "user" }: { type: string }) => {
   const fetchConversations = async () => {
     setLoadingConversationsMenu(true);
     try {
+      const jwt = localStorage.getItem("psf-jwt");
       const data = await getConversations(jwt, user._id);
       setConversationsArray(data);
       setLoadingConversationsMenu(false);
@@ -152,11 +223,33 @@ const Messenger = ({ type = "user" }: { type: string }) => {
 
     if (selectedConv) {
       setLoadingMessages(true);
+      const jwt = localStorage.getItem("psf-jwt");
 
       getMessages(jwt, selectedConv, cancelToken)
-        .then((data) => {
+        .then(async(data) => {
+
           setMessages(data);
           setLoadingMessages(false);
+          if (type !== 'sitter') {
+            try {
+              const order = await getPendingOngoingCareOrder(jwt, selectedReceiver?._id, user?._id)
+              console.log(user._id)
+              console.log(selectedReceiver._id)
+              console.log(order)
+              console.log(order?.dates)
+              setSitterProposal({
+                startDate: new Date(order.dates[0]).toLocaleDateString(),
+                endDate: new Date(order.dates[1]).toLocaleDateString(),
+                totalOfDays: calculateAmountOfDays(order.dates),
+                totalPrice: order.paymentInfo.totalPrice,
+                userId: order.userId,
+                sitterId: order.sitterId
+              });
+            } catch (error) {
+              return router.push("/error?code=1");;        
+            }
+            
+          }
         })
         .catch((err) => {
           if (axios.isCancel(err)) {
@@ -219,28 +312,73 @@ const Messenger = ({ type = "user" }: { type: string }) => {
         : "bg-white sm:bg-violet-300"
     } sm:p-10 sm:flex flex-col gap-4 none relative`}
       >
+      {
+            selectedConv &&
+           <>
+           
+        {type === 'sitter' && <>
         {openCreateOrder && 
         <div className="bg-white z-[2] w-full rounded-xl">
-          <OrderModal setOpenCreateOrder={setOpenCreateOrder} sitterId={user._id} user={selectedReceiver}/>
+          <OrderModal setOpenCreateOrder={setOpenCreateOrder} sitterId={user} user={selectedReceiver}/>
         </div>
         }
         {
           !openCreateOrder && 
         <button 
         onClick={()=> setOpenCreateOrder((prev)=> !prev)}
-        className="py-2 px-3 font-bold bg-white rounded-xl w-fit text-start"
+        className="p-btn font-bold bg-white rounded-xl w-fit text-start scale-animation"
         >
                 Crear propuesta
         </button>
         }
+            </>}
+        {
+          type !== 'sitter' && 
+          <>
+            {
+              sitterProposal && selectedReceiver._id === sitterProposal?.sitterId  ?
+              <button 
+                className="p-btn bg-white w-fit font-semibold text-[20px] scale-animation"
+                onClick={()=> {
+                  setOpenSitterProposal((prev)=>!prev)
+
+                }}
+                >
+                Ver Propuesta
+              </button> :
+              <p className="p-btn bg-white/75  w-fit font-semibold text-[20px]">
+                Propuesta pendiente...
+              </p> 
+            }
+            </>
+        }
+        {
+          openSitterProposal && sitterProposal && 
+          <div className="h-[500px] w-full bg-white text-[20px] p-5 relative">
+              <button 
+              className="px-3 py-1 rounded-full scale-animation bg-red-500 font-bold absolute -top-2 -right-2"
+              onClick={()=> setOpenSitterProposal((prev)=> !prev)}
+              >
+                X
+              </button>
+              <div>Nombre mascota: Tomi</div>
+              <div>Comienzo estadía: {sitterProposal.startDate}</div>
+              <div>Final estadía: {sitterProposal.endDate}</div>
+              <div>Total de días: {sitterProposal.totalOfDays}</div>
+              <div>Precio total: ${sitterProposal.totalPrice.toLocaleString()}</div>
+              <br />
+              <div><button className="p-btn scale-animation bg-sky-500 text-white font-bold text-lg">Mercado Pago</button></div>
+          </div>
+        }
         <div className="w-full h-[85%] bg-violet-100 sm:rounded-2xl shadow-2xl  flex flex-col overflow-scroll overflow-x-hidden overflow-y-hidden">
+          
           <div className="flex sm:hidden gap-5 justify-between items-center p-5 bg-white/100 mb-5">
             <FontAwesomeIcon
               icon={faArrowLeft}
               size="xl"
               className="hover:scale-110 duration-200 cursor-pointer"
               onClick={() => setSelectedConv(null)}
-            />
+              />
             <h1 className="font-bold text-xl">{selectedReceiver?.username}</h1>
             <div>
               <button onClick={()=> setOpenCreateOrder((prev)=> !prev)}>
@@ -250,10 +388,14 @@ const Messenger = ({ type = "user" }: { type: string }) => {
           </div>
           {
             !openCreateOrder && 
-          <div
-          className={`w-full h-full ${type === 'sitter' ? 'bg-white' : 'bg-violet-100 sm:bg-white'} sm:rounded-2xl shadow-2xl  flex flex-col overflow-scroll overflow-x-hidden`}
+            <div
+            className={`w-full h-full ${type === 'sitter' ? 'bg-white' : 'bg-violet-100 sm:bg-white'} sm:rounded-2xl shadow-2xl  flex flex-col overflow-scroll overflow-x-hidden`}
           >
             {!loadingMessages ? (
+              messages.length === 0 ? 
+              <div className="font-semibold italic text-[20px] text-gray-800/75 text-center mt-20 p-5">
+                Escribe tu primer mensaje...
+              </div> :
               messages?.map((element: any, index: any) => (
                 <Message key={index} message={element} scrollRef={scrollRef} />
                 ))
@@ -276,25 +418,35 @@ const Messenger = ({ type = "user" }: { type: string }) => {
           
           <div className="w-full h-[15%] flex gap-3">
           <textarea
-            value={msgBox}
-            onKeyDown={handleSendMsgEnter}
-            placeholder="Escribe aqui...."
-            onChange={(e) => setMsgBox(e.target.value)}
+          value={msgBox}
+          onKeyDown={handleSendMsgEnter}
+          placeholder="Escribe aqui...."
+          onChange={(e) => setMsgBox(e.target.value)}
             name="message"
             className={`w-[85%] sm:w-[80%] p-2 ${type === 'sitter' ? 'bg-white' : 'bg-violet-100 sm:bg-white '}
               sm:rounded-2xl shadow-2xl sm:p-5 text-lg font-medium resize-none`}
-          />
-          <div
-            onClick={handleSendMsg}
-            className={`w-[15%] flex sm:w-[20%] sm:h-full ${type !== 'sitter' ? 'bg-lime-300/75' : ''} rounded-full mr-2 mb-2 sm:m-0 shadow-2xl  p-2 sm:p-5 justify-center items-center hover:scale-105 sm:hover:scale-110 duration-200 cursor-pointer`}
+              />
+              <div
+              onClick={handleSendMsg}
+              className={`w-[15%] flex sm:w-[20%] sm:h-full ${type !== 'sitter' ? 'bg-lime-300/75' : ''} rounded-full mr-2 mb-2 sm:m-0 shadow-2xl  p-2 sm:p-5 justify-center items-center hover:scale-105 sm:hover:scale-110 duration-200 cursor-pointer`}
           >
-            <FontAwesomeIcon
-              icon={faPaw}
-              className="text-orange-800 w-8 h-8"
-            />
+          <FontAwesomeIcon
+          icon={faPaw}
+          className="text-orange-800 w-8 h-8"
+          />
           </div>
+          </div>
+        }
+        
+            </>
+      } 
+      {
+        !selectedConv && 
+        <div className=" text-center font-semibold text-[20px] mt-20 p-5 rounded-xl bg-white/75 ">
+          Selecciona una conversacion para chatear!
+          <p>=)</p>
         </div>
-          }
+      }
       </div>
     </section>
   );

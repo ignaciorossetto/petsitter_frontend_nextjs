@@ -19,7 +19,7 @@ const Message:React.FC<MessagePropsType> = ({message, scrollRef}: MessagePropsTy
                   <div className='h-[50px] w-[50px] rounded-full relative'>
                     {
                       user?.profileImg && 
-                    <Image alt='profileImg' src={user?.profileImg} fill className='absolut object-cover rounded-full'/> 
+                    <Image alt='profileImg' src={user?.profileImg} fill className=' object-cover rounded-full absolute bottom-0 right-0'/> 
                     }
                     {
                       !user?.profileImg && <FontAwesomeIcon icon={faUser} className='h-[35px] w-[35px]'/> 
@@ -31,7 +31,7 @@ const Message:React.FC<MessagePropsType> = ({message, scrollRef}: MessagePropsTy
                   <div className={`h-[50px] w-[50px] rounded-full relative ${!receiver?.profileImg && 'bg-violet-300'} flex items-center justify-center `}>
                     {
                       receiver?.profileImg && 
-                      <Image alt='profileImg' src={receiver?.profileImg} fill className='absolut object-cover rounded-full'/> 
+                      <Image alt='profileImg' src={receiver?.profileImg} fill className=' object-cover rounded-full absolute'/> 
                     }
                     {
                       !receiver?.profileImg && <FontAwesomeIcon icon={faUser} className='h-[35px] w-[35px]'/> 
@@ -39,7 +39,7 @@ const Message:React.FC<MessagePropsType> = ({message, scrollRef}: MessagePropsTy
                   
                   </div>
                 }
-                <div className={`${user?._id === message?.sender ? 'text-end' : 'text-start'} `}
+                <div className={`${user?._id === message?.sender ? 'text-end' : 'text-start'} break-all`}
                 >{message?.text}.</div>
                 
                 

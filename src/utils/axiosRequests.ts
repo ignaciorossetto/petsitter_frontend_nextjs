@@ -52,9 +52,9 @@ const createAxiosInstance = (jwt: JWTtype = null) => {
       if (response.status === 200) {
         return response.data
       }
-      else return false
+      throw new Error()
     } catch (error) {
-      return false
+      throw new Error()
     }
   }
 
@@ -153,6 +153,17 @@ export const getGoogleLoggedInUserInfo = async(jwt: JWTtype) => {
   try {
     const response = await axiosInstance.get(url)
     return response.data
+  } catch (error) {
+     throw new Error()
+  }
+}
+
+export const getPendingOngoingCareOrder = async(jwt:JWTtype, sitterId:string, userId:string) => {
+  const axiosInstance = createAxiosInstance(jwt)
+  const url = `api/care-orders?sitterId=${sitterId}&userId=${userId}`
+  try {
+    const response = await axiosInstance.get(url)
+    return response.data.payload[0]
   } catch (error) {
      throw new Error()
   }
