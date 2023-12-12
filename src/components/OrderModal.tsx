@@ -11,6 +11,8 @@ import { UserContext } from "@/hooks/auth/authContext";
 import { calculateAmountOfDays, formatPetAge, formatPetSize } from "@/utils/utilsFunctions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar } from "@fortawesome/free-regular-svg-icons";
+import config from "@/utils/config";
+
 
 type Props = {
     setOpenCreateOrder: Dispatch<boolean>;
@@ -50,6 +52,8 @@ const OrderModal: FC<Props> = ({setOpenCreateOrder, user, sitterId}) => {
     confirmed: false,
   })
   const { socket } = useContext(UserContext);
+
+ 
 
 
   useEffect(()=> {
@@ -201,7 +205,7 @@ const OrderModal: FC<Props> = ({setOpenCreateOrder, user, sitterId}) => {
         </button>
         :
         <button
-          className="font-semibold bg-violet-800 text-white p-btn relative scale-animation"
+          className="font-semibold bg-green-800 text-white p-btn relative scale-animation"
           onClick={()=> setSelectedPrice({...selectedPrice, confirmed: false})}
         >
            Cambiar tarifa
@@ -217,7 +221,7 @@ const OrderModal: FC<Props> = ({setOpenCreateOrder, user, sitterId}) => {
         {
           dates.selected ? 
           <button
-            className="font-semibold bg-emerald-800 text-white p-btn relative scale-animation"
+            className="font-semibold bg-green-800 text-white p-btn relative scale-animation"
             onClick={()=> {
               setDates(datesInitialState)
             }}

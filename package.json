@@ -14,6 +14,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@mercadopago/sdk-react": "^0.0.15",
     "@react-google-maps/api": "^2.18.1",
     "@types/node": "20.3.1",
     "@types/react": "18.2.12",

@@ -23,6 +23,9 @@ import OrderModal from "./OrderModal";
 import Swal from "sweetalert2";
 import { json } from "stream/consumers";
 import { calculateAmountOfDays } from "@/utils/utilsFunctions";
+import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+import config from "@/utils/config";
+
 
 
 type SitterProposalType = {
@@ -32,6 +35,7 @@ type SitterProposalType = {
     sitterId: string;
     startDate: string;
     endDate: string;
+    preferenceId: string;
 
 }
 
@@ -54,11 +58,17 @@ const Messenger = ({ type = "user" }: { type: string }) => {
   const { verifyToken } = useAuthRequest();
   const [sitterProposal, setSitterProposal] = useState<SitterProposalType | null>(null)
   const [openSitterProposal, setOpenSitterProposal] = useState(false)
+  const [preferenceId, setPreferenceId] = useState<string | null>(null)
+
 
   const handleConfirm = () => {
     // Handle navigation here
     router.push('/user/pets'); // Replace with your desired route
   };
+
+  useEffect(() => {
+    initMercadoPago(config.mpPublicKey!, { locale: 'es-AR' });
+  }, []);
 
 
   const display = async (): Promise<void> => {
@@ -132,7 +142,8 @@ const Messenger = ({ type = "user" }: { type: string }) => {
         totalOfDays: data.message.totalOfDays,
         totalPrice: data.message.totalPrice,
         userId: data.message.userId,
-        sitterId: data.message.sitterId
+        sitterId: data.message.sitterId,
+        preferenceId: ''
       });
     });
   }, [socket]);
@@ -210,6 +221,9 @@ const Messenger = ({ type = "user" }: { type: string }) => {
       setLoadingConversationsMenu(false);
     }
   };
+
+  console.log('aa', config.mpPublicKey)
+
   useEffect(() => {
     const cid = searchParams.get("cid") || null;
     const sid = searchParams.get("sid") || null;
@@ -220,7 +234,6 @@ const Messenger = ({ type = "user" }: { type: string }) => {
 
   useEffect(() => {
     let cancelToken = axios.CancelToken.source();
-
     if (selectedConv) {
       setLoadingMessages(true);
       const jwt = localStorage.getItem("psf-jwt");
@@ -230,26 +243,26 @@ const Messenger = ({ type = "user" }: { type: string }) => {
 
           setMessages(data);
           setLoadingMessages(false);
-          if (type !== 'sitter') {
             try {
-              const order = await getPendingOngoingCareOrder(jwt, selectedReceiver?._id, user?._id)
-              console.log(user._id)
-              console.log(selectedReceiver._id)
-              console.log(order)
-              console.log(order?.dates)
+              const sitterId = type !== 'sitter' ? selectedReceiver?._id : user?._id
+              const userId = type !== 'sitter' ? user?._id : selectedReceiver?._id
+              const [order, preferenceId] = await getPendingOngoingCareOrder(jwt, sitterId, userId)
+              if (!order) return setSitterProposal(null)
+              console.log(preferenceId)
               setSitterProposal({
                 startDate: new Date(order.dates[0]).toLocaleDateString(),
                 endDate: new Date(order.dates[1]).toLocaleDateString(),
-                totalOfDays: calculateAmountOfDays(order.dates),
+                totalOfDays: calculateAmountOfDays({startDate: order.dates[0], endDate: order.dates[1]}),
                 totalPrice: order.paymentInfo.totalPrice,
                 userId: order.userId,
-                sitterId: order.sitterId
+                sitterId: order.sitterId,
+                preferenceId: preferenceId
               });
+              setPreferenceId(preferenceId)
             } catch (error) {
+              console.log(error)
               return router.push("/error?code=1");;        
             }
-            
-          }
         })
         .catch((err) => {
           if (axios.isCancel(err)) {
@@ -316,7 +329,7 @@ const Messenger = ({ type = "user" }: { type: string }) => {
             selectedConv &&
            <>
            
-        {type === 'sitter' && <>
+        {type === 'sitter' && !sitterProposal && <>
         {openCreateOrder && 
         <div className="bg-white z-[2] w-full rounded-xl">
           <OrderModal setOpenCreateOrder={setOpenCreateOrder} sitterId={user} user={selectedReceiver}/>
@@ -331,7 +344,22 @@ const Messenger = ({ type = "user" }: { type: string }) => {
                 Crear propuesta
         </button>
         }
-            </>}
+            
+        </>
+        }
+        {
+          type === 'sitter' && sitterProposal && 
+          <button 
+                className="p-btn bg-white w-fit font-semibold text-[20px] scale-animation"
+                onClick={()=> {
+                  setPreferenceId(sitterProposal.preferenceId)
+                  setOpenSitterProposal((prev)=>!prev)
+
+                }}
+                >
+                Ver Propuesta
+            </button>
+        }
         {
           type !== 'sitter' && 
           <>
@@ -357,7 +385,9 @@ const Messenger = ({ type = "user" }: { type: string }) => {
           <div className="h-[500px] w-full bg-white text-[20px] p-5 relative">
               <button 
               className="px-3 py-1 rounded-full scale-animation bg-red-500 font-bold absolute -top-2 -right-2"
-              onClick={()=> setOpenSitterProposal((prev)=> !prev)}
+              onClick={()=> {
+                setOpenSitterProposal((prev)=> !prev)}
+              }
               >
                 X
               </button>
@@ -367,7 +397,26 @@ const Messenger = ({ type = "user" }: { type: string }) => {
               <div>Total de días: {sitterProposal.totalOfDays}</div>
               <div>Precio total: ${sitterProposal.totalPrice.toLocaleString()}</div>
               <br />
-              <div><button className="p-btn scale-animation bg-sky-500 text-white font-bold text-lg">Mercado Pago</button></div>
+              {
+                type !== 'sitter' ? 
+                <>
+                {
+                  preferenceId && 
+                  <div className="w-[300px]">
+                      <Wallet initialization={{preferenceId: sitterProposal.preferenceId}}/>
+                  </div>
+                }
+                </>
+              :
+              <div>
+                <button
+                className="bg-red-800 p-btn scale-animation text-white font-semibold text-[20px]"
+                >
+                  Eliminar
+                </button>
+              </div>
+            }
+
           </div>
         }
         <div className="w-full h-[85%] bg-violet-100 sm:rounded-2xl shadow-2xl  flex flex-col overflow-scroll overflow-x-hidden overflow-y-hidden">

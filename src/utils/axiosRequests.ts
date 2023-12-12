@@ -163,7 +163,7 @@ export const getPendingOngoingCareOrder = async(jwt:JWTtype, sitterId:string, us
   const url = `api/care-orders?sitterId=${sitterId}&userId=${userId}`
   try {
     const response = await axiosInstance.get(url)
-    return response.data.payload[0]
+    return [response.data.payload[0], response.data.preferenceId]
   } catch (error) {
      throw new Error()
   }
