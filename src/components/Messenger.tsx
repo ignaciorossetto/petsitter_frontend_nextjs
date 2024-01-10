@@ -222,7 +222,6 @@ const Messenger = ({ type = "user" }: { type: string }) => {
     }
   };
 
-  console.log('aa', config.mpPublicKey)
 
   useEffect(() => {
     const cid = searchParams.get("cid") || null;
