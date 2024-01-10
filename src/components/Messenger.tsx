@@ -247,7 +247,6 @@ const Messenger = ({ type = "user" }: { type: string }) => {
               const userId = type !== 'sitter' ? user?._id : selectedReceiver?._id
               const [order, preferenceId] = await getPendingOngoingCareOrder(jwt, sitterId, userId)
               if (!order) return setSitterProposal(null)
-              console.log(preferenceId)
               setSitterProposal({
                 startDate: new Date(order.dates[0]).toLocaleDateString(),
                 endDate: new Date(order.dates[1]).toLocaleDateString(),
@@ -259,11 +258,12 @@ const Messenger = ({ type = "user" }: { type: string }) => {
               });
               setPreferenceId(preferenceId)
             } catch (error) {
-              console.log(error)
+              console.log('getMessages: ', error)
               return router.push("/error?code=1");;        
             }
         })
         .catch((err) => {
+          console.log('catch: ', err)
           if (axios.isCancel(err)) {
             return router.push("/error?code=1");;
           }
