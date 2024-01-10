@@ -245,7 +245,7 @@ const Messenger = ({ type = "user" }: { type: string }) => {
             try {
               const sitterId = type !== 'sitter' ? selectedReceiver?._id : user?._id
               const userId = type !== 'sitter' ? user?._id : selectedReceiver?._id
-              const [order, preferenceId] = await getPendingOngoingCareOrder(jwt, sitterId, userId)
+              const [order, preferenceId] = await getPendingOngoingCareOrder(jwt, sitterId, userId, cancelToken)
               if (!order) return setSitterProposal(null)
               setSitterProposal({
                 startDate: new Date(order.dates[0]).toLocaleDateString(),

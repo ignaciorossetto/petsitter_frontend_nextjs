@@ -158,11 +158,13 @@ export const getGoogleLoggedInUserInfo = async(jwt: JWTtype) => {
   }
 }
 
-export const getPendingOngoingCareOrder = async(jwt:JWTtype, sitterId:string, userId:string) => {
+export const getPendingOngoingCareOrder = async(jwt:JWTtype, sitterId:string, userId:string, cancelToken: CancelTokenSource ) => {
   const axiosInstance = createAxiosInstance(jwt)
   const url = `api/care-orders?sitterId=${sitterId}&userId=${userId}`
   try {
-    const response = await axiosInstance.get(url)
+    const response = await axiosInstance.get(url, {
+      cancelToken: cancelToken.token,
+    })
     console.log(response)
     return [response.data.payload[0], response.data.preferenceId]
   } catch (error) {
