@@ -59,6 +59,7 @@ const Messenger = ({ type = "user" }: { type: string }) => {
   const [sitterProposal, setSitterProposal] = useState<SitterProposalType | null>(null)
   const [openSitterProposal, setOpenSitterProposal] = useState(false)
   const [preferenceId, setPreferenceId] = useState<string | null>(null)
+  const [loadingProposal, setLoadingProposal] = useState(false)
 
 
   const handleConfirm = () => {
@@ -245,8 +246,13 @@ const Messenger = ({ type = "user" }: { type: string }) => {
             try {
               const sitterId = type !== 'sitter' ? selectedReceiver?._id : user?._id
               const userId = type !== 'sitter' ? user?._id : selectedReceiver?._id
+              setLoadingProposal(true)
               const [order, preferenceId] = await getPendingOngoingCareOrder(jwt, sitterId, userId, cancelToken)
-              if (!order) return setSitterProposal(null)
+              if (!order) {
+                setLoadingProposal(false)
+                return setSitterProposal(null)
+            }
+
               setSitterProposal({
                 startDate: new Date(order.dates[0]).toLocaleDateString(),
                 endDate: new Date(order.dates[1]).toLocaleDateString(),
@@ -256,14 +262,13 @@ const Messenger = ({ type = "user" }: { type: string }) => {
                 sitterId: order.sitterId,
                 preferenceId: preferenceId
               });
+              setLoadingProposal(false)
               setPreferenceId(preferenceId)
             } catch (error) {
-              console.log('getMessages: ', error)
               return router.push("/error?code=1");;        
             }
         })
         .catch((err) => {
-          console.log('catch: ', err)
           if (axios.isCancel(err)) {
             return router.push("/error?code=1");;
           }
@@ -363,19 +368,33 @@ const Messenger = ({ type = "user" }: { type: string }) => {
           type !== 'sitter' && 
           <>
             {
-              sitterProposal && selectedReceiver._id === sitterProposal?.sitterId  ?
-              <button 
-                className="p-btn bg-white w-fit font-semibold text-[20px] scale-animation"
-                onClick={()=> {
-                  setOpenSitterProposal((prev)=>!prev)
+              loadingProposal && 
+              <FontAwesomeIcon 
+              className="self-start sm:self-center ml-10 sm:ml-0"
+              icon={faSpinner} 
+              size="xl"
+              spin 
+              />
+            }
+            {
+              !loadingProposal &&
+              <>
+                {
+                  sitterProposal && selectedReceiver._id === sitterProposal?.sitterId  ?
+                  <button 
+                    className="p-btn bg-white w-fit font-semibold text-[20px] scale-animation"
+                    onClick={()=> {
+                      setOpenSitterProposal((prev)=>!prev)
 
-                }}
-                >
-                Ver Propuesta
-              </button> :
-              <p className="p-btn bg-white/75  w-fit font-semibold text-[20px]">
-                Propuesta pendiente...
-              </p> 
+                    }}
+                    >
+                    Ver Propuesta
+                  </button> :
+                  <p className="p-btn bg-white/75  w-fit font-semibold text-[20px]">
+                    Propuesta pendiente...
+                  </p> 
+                }
+              </>
             }
             </>
         }
@@ -428,11 +447,15 @@ const Messenger = ({ type = "user" }: { type: string }) => {
               onClick={() => setSelectedConv(null)}
               />
             <h1 className="font-bold text-xl">{selectedReceiver?.username}</h1>
+
+        {
+          type === 'sitter' && 
             <div>
               <button onClick={()=> setOpenCreateOrder((prev)=> !prev)}>
                 Crear propuesta
               </button>
             </div>
+        }
           </div>
           {
             !openCreateOrder && 
