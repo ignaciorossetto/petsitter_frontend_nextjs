@@ -31,7 +31,7 @@ interface FormValues {
 
 
 const NewPetForm = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<FormValues>();
   const { verifyToken } = useAuthRequest();
   const [loading, setLoading] = useState<boolean>(false)
   const {user, setUser } = useContext<UserContextType>(UserContext)
@@ -65,27 +65,28 @@ const NewPetForm = () => {
 
 
 
-  const onSubmit = async (data: any, e: any) => {
-    setLoading(true)
-    e.preventDefault()
-    try {
-    const formData = new FormData(formRef.current!);
-    const dates = datesCheckbox ? [format(date[0].startDate, "dd/MM/yyyy" ), format(date[0].endDate, "dd/MM/yyyy" )] : null
-    const milisecondDate:any = datesCheckbox ? Number(date[0].startDate) : null
-    if (dates){
-      formData?.append("dates", JSON.stringify(dates));
-      formData?.append("milisecondsDates", milisecondDate);
-      formData?.append("available", 'true');
+  const onSubmit = async (data: any) => {
+    const jwt = localStorage.getItem("psf-jwt")
+    const formData = new FormData();
+      for (const key in data) {
+        if (key !== 'images') {
+          formData.append(key, data[key])
+        }
     }
-
-    formData?.append("ownerId", user._id);
-    formData?.append("ownerName", user.username);
+    for (let index = 0; index < data.images.length; index++) {
+      formData.append('images', data.images[index]);
+    }
+      formData?.append("ownerId", user._id);
+      formData?.append("ownerName", user.username);
+    try {
+      setLoading(true)
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pets`,
       formData,
       {
         headers: {
           "Content-Type": `multipart/form-data`,
+          "Authorization": `Bearer ${jwt}`
         },
       }
     );
@@ -99,11 +100,21 @@ const NewPetForm = () => {
       icon: 'success',
       title: `Creaste una mascota nueva!`
     });
-    router.push('/user/pets')
+      router.push('/user/pets')
+      reset()
     setLoading(false)
   } catch (error) {
-    setLoading(false)
-    router.push('/error?code=2')
+      setLoading(false)
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'error',
+        title: `Error al crear una mascota nueva!`
+      });
+      reset()      
   }
   };
 
@@ -198,50 +209,6 @@ const NewPetForm = () => {
             {errors.size?.type === "required" && (
             <p className="bg-white/75 mt-2 rounded-md px-3 py-4 text-red-500">Debes elegir el tamano de mascota!</p>
           )}
-          <label className="px-3 py-4 font-medium text-xl">
-              Fechas
-              <input
-                {...register("dates")}
-                name="dates"
-                onChange={() => setDateCheckBox(!datesCheckbox)}
-                checked={datesCheckbox}
-                type="checkbox"
-                
-              />
-            </label>
-            <div className="px-3 py-2 text-lg">
-              {datesCheckbox ? (
-                <div className='flex flex-col'>
-                    <div className='flex gap-3 items-baseline mb-3'>
-                  <FontAwesomeIcon
-                    icon={faCalendarDays}
-                    className="headerIcon"
-                  />
-                  <span
-                    className=" "
-                    onClick={() => setOpenCalendar(!openCalendar)}
-                  >{`${format(date[0].startDate, "dd/MM/yyyy")} to ${format(
-                    date[0].endDate,
-                    "dd/MM/yyyy"
-                  )}`}</span>
-                    </div>
-                  {openCalendar && (
-                    <DateRange
-                      onChange={(item:any) => setDate([item.selection])}
-                      editableDateInputs={true}
-                      moveRangeOnFirstSelection={false}
-                      minDate={new Date()}
-                      ranges={date}
-                      className="w-full sm:w-[380px]"
-                    />
-                  )}
-                </div>
-              ) : (
-                <span className="checkDateFalseSpan">
-                  No quiero publicar mi mascota aun!
-                </span>
-              )}
-            </div>
             <label className="px-3 py-4 font-medium text-xl">Imagenes</label>
             <input
               {...register("images",{

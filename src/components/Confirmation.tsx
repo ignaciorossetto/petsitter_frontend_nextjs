@@ -44,7 +44,7 @@ const Confirmation = () => {
       };
       try {
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/checkAccount`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/verifyAccount`,
           obj
         );
         Swal.fire({

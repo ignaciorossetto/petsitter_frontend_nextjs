@@ -1,14 +1,13 @@
 "use client"
 import { createContext, useEffect, useRef, useState } from "react";
-import axios from 'axios'
-import { useRouter } from "next/navigation";
 import socketio from "socket.io-client";
 import config from "@/utils/config";
+import { IUser } from "@/types/types";
 
 
 
 export type UserContextType = {
-    user: any;
+    user: IUser | null | undefined;
     setUser: any;
     socket: any;
     receiver: any;
@@ -32,7 +31,7 @@ export const UserContextProvider = ({children}: UserContextProviderType) => {
         reconnection:false
     }))
     
-    const [user, setUser] = useState();
+    const [user, setUser] = useState<IUser | null | undefined>();
     const [authJWT, setAuthJWT] = useState<string | null>(null)
     const [receiver, setReceiver] = useState<any | null>(null)
 

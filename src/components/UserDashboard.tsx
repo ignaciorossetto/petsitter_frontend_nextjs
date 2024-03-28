@@ -63,7 +63,7 @@ useEffect(()=> {
     try {
         let formData:any = new FormData()
         formData.append('profileImg', file)
-        const data = await newProfileImgRequest(jwt, formData, type, user._id)
+        const data = await newProfileImgRequest(jwt, formData, type, user!._id)
         setUser(data)
         setLoadingProfileImg(false)
     } catch (error) {
@@ -93,9 +93,19 @@ useEffect(()=> {
       fullAddress: address}
       setLoadingNewAddress(true)
       try {
-        const data = await newAddressRequest(jwt, obj, user._id, type)
-        setUser(data)
+        const data = await newAddressRequest(jwt, obj, user!._id, type)
+        setUser(data.payload)
         setLoadingNewAddress(false)
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          icon: 'success',
+          title: `Domicilio actualizado correctamente...`,
+        });
+        
       } catch (error) {
         setLoadingNewAddress(false)
         Swal.fire({
@@ -171,7 +181,7 @@ useEffect(()=> {
             {user?.fullAddress?.address ? 
             <h1 className='text-xl font-semibold'>{user?.fullAddress?.address}</h1>
             :
-            <h1 className='text-xl font-semibold'>No configuraste tu domicilio!</h1>
+            <h1 className='text-xl font-semibold animate-bounce'>No configuraste tu domicilio!</h1>
             }
             </>}
           {type === 'sitter' && <>

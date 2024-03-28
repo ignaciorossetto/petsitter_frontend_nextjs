@@ -5,11 +5,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
-import { LoginFormPropsType, LoginFormType } from "@/types/types";
+import { LoginFormType } from "@/types/types";
 import { loginRequest } from "@/utils/axiosRequests";
+import LoadingPulsePaw from "./LoadingComponents/LoadingPulsePaw";
 
 
-const LoginForm = ({ type }: LoginFormPropsType) => {
+const LoginForm = ({ type }: any) => {
   const mailRef = useRef<HTMLInputElement>(null);
   const pswRef = useRef<HTMLInputElement>(null);
   const { setUser, socket } = useContext<UserContextType>(UserContext);
@@ -48,7 +49,7 @@ const LoginForm = ({ type }: LoginFormPropsType) => {
         title: `Bienvenido ${response?.data?.payload?.username}!`,
       });
       localStorage.setItem('psf-jwt', response?.data?.token);
-      const url = type === 'sitter' ? `/sitter` : `/`
+      const url = type === 'sitter' ? `/sitter` : `/user/pets`
       router.push(url);
     } catch (error: any) {
       setError(error?.message);
@@ -85,15 +86,16 @@ const LoginForm = ({ type }: LoginFormPropsType) => {
           {type === "sitter" && "Sitters "}Login
         </h1>
         
-        {loading && (
-          <FontAwesomeIcon
-            size="2xl"
-            className="h-[300px] justify-self-center "
-            icon={faSpinner}
-            spin
-          />
-        )}
         {!loading && (
+          // <FontAwesomeIcon
+          //   size="2xl"
+          //   className="h-[300px] justify-self-center "
+          //   icon={faSpinner}
+          //   spin
+          // />
+          <LoadingPulsePaw />
+        )}
+        {loading && (
           <>
             <form>
               <label className="font-medium text-[20px] mb-5">Usuario</label>

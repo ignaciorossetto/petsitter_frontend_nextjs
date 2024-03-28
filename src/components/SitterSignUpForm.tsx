@@ -60,9 +60,9 @@ const SitterSignUpForm = () => {
             formData.append(key, data[key])
         }
         formData.append('address', address.address!)
-        formData.append('latLng', JSON.stringify([address.latLng!.lng, address.latLng!.lat]))
+        formData.append('latLng', `${address.latLng!.lng}, ${address.latLng!.lat}`)
         try {
-            await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/sitter-register`, formData, {
+            await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/sitters`, formData, {
                 withCredentials: true,
                 headers: {
                             "Content-Type": "multipart/form-data",
@@ -72,7 +72,8 @@ const SitterSignUpForm = () => {
             reset(data)
             setSubmittedForm(true)
             setLoading(false)           
-        } catch (error:any) {
+        } catch (error: any) {
+          console.log(error)
             Swal.fire({
                 toast: true,
                 position: 'top-end',
@@ -80,7 +81,7 @@ const SitterSignUpForm = () => {
                 timer: 3000,
                 timerProgressBar: true,
                 icon: 'error',
-                title: error.response.message
+                title: error.response?.message
               });
             reset(data)
             setLoading(false)           

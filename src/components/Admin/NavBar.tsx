@@ -5,6 +5,7 @@ import {
   faXmarkCircle,
 } from "@fortawesome/free-regular-svg-icons";
 import {
+    faDashboard,
   faPaw,
   faRightFromBracket,
   faShop,
@@ -13,28 +14,26 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import React, { useState, useContext, useEffect } from "react";
-import { UserContext, UserContextType } from "@/hooks/auth/authContext";
+import React, { useState, useContext } from "react";
 import Image from "next/image";
 import Swal from "sweetalert2";
-import { NavBarPropType } from "@/types/types";
 import { getGoogleLoggedInUserInfo } from "@/utils/axiosRequests";
+import { AdminContext, AdminContextType } from "@/hooks/auth/adminContext";
 
-const NavBar = ({type}:NavBarPropType) => {
+const NavBar = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const googleLogin: string | null = searchParams.get("login-google");
   const access_token: string | null = searchParams.get("access_token");
   const [loading, setLoading] = useState<boolean>(false);
   const [showNavBarModal, setShowNavBarModal] = useState<boolean>(false);
-  const { user, setUser, socket } = useContext<UserContextType>(UserContext);
+  const { admin, setAdmin, socket } = useContext<AdminContextType>(AdminContext);
 
 
 
   const handleLogOutBtn = () => {
     socket.current.emit('logout')
-    setUser(null);
-    localStorage.setItem('psf-jwt', '')
+    setAdmin(null);
+    localStorage.setItem('psf-admin-jwt', '')
     
     Swal.fire({
       toast: true,
@@ -45,15 +44,15 @@ const NavBar = ({type}:NavBarPropType) => {
       icon: 'success',
       title: 'Nos vemos pronto!'
     });
-    if (type==='sitter') return router.push('/sitter');
     return router.push('/');
   };
 
   const getGoogleLoggedUserInfo = async () => {
     try {
       const { payload } = await getGoogleLoggedInUserInfo(access_token)
+      console.log('payload', payload);
       localStorage.setItem('psf-jwt', access_token || '')
-      setUser(payload);
+      setAdmin(payload);
       setLoading(false);
       Swal.fire({
         toast: true,
@@ -65,7 +64,6 @@ const NavBar = ({type}:NavBarPropType) => {
         title: `Bienvenido ${payload.username}!`,
       });
       socket.current.emit("identity", payload._id);
-      router.push("/user/pets")
     } catch (error) {
       console.log('error', error);
       router.push("/error?code=1");
@@ -73,17 +71,10 @@ const NavBar = ({type}:NavBarPropType) => {
   };
 
 
-  useEffect(() => {
-    if (googleLogin) {
-        setLoading(true);
-        getGoogleLoggedUserInfo()
-    }
-  }, [])
-
   return (
     <nav className="z-10 shadow-2xl w-full bg-white rounded-2xl  h-[8rem] flex justify-between items-center p-10 mb-5 sticky top-0">
       <div
-        className="md:hidden cursor-pointer hover:scale-110"
+        className="sm:hidden cursor-pointer hover:scale-110"
         onClick={() => setShowNavBarModal((prev) => !prev)}
       >
         <svg
@@ -96,11 +87,11 @@ const NavBar = ({type}:NavBarPropType) => {
         </svg>
       </div>
       <h1 className="relative flex gap-2 items-center justify-center font-semibold text-xl sm:text-2xl md:text-3xl tracking-widest cursor-pointer text-orange-800">
-        <Link href={type === 'sitter' ? '/sitter' : '/'}>Pimi <span className="text-[15px] ml-2 absolute top-5 right-[45px]">app</span></Link>
-        {type==='sitter' && <p className="absolute top-[28px] right-0 text-md italic font-light text-green-900">Sitters</p>}
-        <FontAwesomeIcon icon={faPaw} size="lg" className="ml-5"/>
+        <Link href={'/admin'}>PetSitterFinder</Link>
+        <p className="absolute top-[28px] right-0 text-md italic font-light text-green-900">ADMIN</p>
+        <FontAwesomeIcon icon={faPaw} size="lg"/>
       </h1>
-      <div className="hidden md:flex gap-4 font-medium text-black ">
+      <div className="hidden sm:flex gap-4 font-medium text-black ">
         {loading ? (
           <div className="w-[125px] pr-12">
             <FontAwesomeIcon
@@ -109,36 +100,27 @@ const NavBar = ({type}:NavBarPropType) => {
               className="w-10 h-10 text-center"
             />
           </div>
-        ) : user ? (
+        ) : admin ? (
           <>
-          {
-            type!=='sitter' &&
             <span
               className="cursor-pointer
-                hover:scale-110 duration-200 bg-violet-300 p-3 rounded-lg w-[135px] text-center"
+                hover:scale-110 duration-200 bg-violet-300 p-3 rounded-lg"
             >
-              <Link href="/user/pets">
-                <FontAwesomeIcon size="xl" icon={faPaw}  className="text-black"/>
-                <span
-                    className="ml-2"
-                  >mascotas</span>
+              <Link href="/admin/dashboard">
+                <FontAwesomeIcon size="xl" icon={faDashboard}  className="text-black"/>
               </Link>
             </span>
-          }
             <span
               className={`cursor-pointer
-                hover:scale-110 duration-200 ${type==='sitter' ? 'bg-gradient-to-tr from-lime-400 to-emerald-300' : 'bg-violet-300'} p-3 rounded-lg w-[105px] text-center`}
+                hover:scale-110 duration-200 p-3 rounded-lg`}
             >
-              <Link href={`${type==='sitter' ? '/sitter/chat' : '/user/chat'}`}>
+              <Link href={`/admin/chat`}>
                 <FontAwesomeIcon size="xl" icon={faCommentDots}  className="text-black"/>
-                  <span
-                    className="ml-2"
-                  >chat</span>
               </Link>
             </span>
             <span
               className={`cursor-pointer
-                hover:scale-110 duration-200 ${type==='sitter' ? 'bg-gradient-to-tr from-lime-400 to-emerald-300' : 'bg-violet-300'} p-3 rounded-lg`}
+                hover:scale-110 duration-200 p-3 rounded-lg`}
             >
               <button onClick={handleLogOutBtn}>
                 <FontAwesomeIcon
@@ -147,14 +129,14 @@ const NavBar = ({type}:NavBarPropType) => {
                 />
               </button>
             </span>
-            {user?.profileImg ? (
+            {admin?.profileImg ? (
               <span
                 className="cursor-pointer
                     hover:scale-110 duration-200 rounded-lg hover:shadow-2xl"
               >
-                <Link href={`${type==='sitter' ? `/sitter/${user._id}` : '/user'}`}>
+                <Link href={`/admin/profile`}>
                   <Image
-                    src={user?.profileImg}
+                    src={admin?.profileImg}
                     alt="profile-image"
                     height={51}
                     width={51}
@@ -165,9 +147,9 @@ const NavBar = ({type}:NavBarPropType) => {
             ) : (
               <span
                 className={`cursor-pointer
-                    hover:scale-110 duration-200 ${type==='sitter' ? 'bg-gradient-to-tr from-lime-400 to-emerald-300' : 'bg-violet-300'} p-3 rounded-lg`}
+                    hover:scale-110 duration-200  p-3 rounded-lg`}
               >
-                <Link href={`${type==='sitter' ? `/sitter/${user._id}` : '/user'}`}>
+                <Link href={`/admin/profile`}>
                   <FontAwesomeIcon size="xl" icon={faUser} className="text-black"/>
                 </Link>
               </span>
@@ -175,19 +157,13 @@ const NavBar = ({type}:NavBarPropType) => {
           </>
         ) : (
           
-          
-            
+                 
             <>
             <Link 
-            href={`${type==='sitter' ? '/sitter/login' : '/login'}`} 
-            className={`cursor-pointer hover:scale-110 duration-200 ${type==='sitter' ?  'bg-gradient-to-tr from-lime-400 to-emerald-300' : 'bg-violet-300' } p-4 font-semibold text-md rounded-lg`}>
+            href={`/admin/login`} 
+            className={`cursor-pointer hover:scale-110 duration-200  p-4 font-semibold text-md rounded-lg`}>
                 Ingresar
           </Link>
-          <Link 
-          href={`${type==='sitter' ? '/sitter/sign-up' : '/sign-up'}`} 
-          className={`cursor-pointer hover:scale-110 duration-200 ${type==='sitter' ?  'bg-gradient-to-tr from-lime-400 to-emerald-300' : 'bg-violet-300' } p-4 font-semibold text-md rounded-lg`}>
-            Registrar
-          </Link> 
          
         </>
         
@@ -196,7 +172,7 @@ const NavBar = ({type}:NavBarPropType) => {
         )}
       </div>
       {showNavBarModal && (
-        <div className="md:hidden fixed left-0 top-0 w-full h-full bg-white/50 flex z-10">
+        <div className="sm:hidden fixed left-0 top-0 w-full h-full bg-white/50 flex z-10">
           <div className="menuContainer  w-44 h-full bg-white border-r-2 border-orange-400/25 p-5 flex flex-col justify-between">
             <div className="">
               <FontAwesomeIcon
@@ -208,45 +184,27 @@ const NavBar = ({type}:NavBarPropType) => {
               <h1 className=" text-center text-xl font-semibold mt-4">MENU</h1>
               <br />
               <br />
-              {user && (
+              {admin && (
                 <>
-                <Link href={type==='sitter' ? '/sitter/chat' : `/user/chat`}>
+                <Link href={`/admin/chat`}>
                   <h3 className="font-medium mt-1 p-2 cursor-pointer rounded-xl duration-150 hover:bg-slate-300">
                     <FontAwesomeIcon size="xl" icon={faCommentDots} />{" "}
                     Chat
                   </h3>
                 </Link>
-                {
-                  type!=='sitter' && 
                 
-                <Link href="#">
-                  <h3 className="font-medium mt-1 p-2 cursor-pointer align-center rounded-xl duration-150 hover:bg-slate-300">
-                  <FontAwesomeIcon size="xl" icon={faShop} />{" "}
-                    Tienda
-                  </h3>
-                </Link>
-                }
-                {
-                  type!=='sitter' && 
-                
-                <Link href="/user/pets">
-                  <h3 className="font-medium mt-1 hover:scale-105 p-2 cursor-pointer text-center rounded-xl duration-150 bg-violet-200 hover:bg-slate-300">
-                    Buscar cuidador!
-                  </h3>
-                    </Link>
-                  }
                 </>
               )}
             </div>
             <div className="pb-5 ">
-              {user ? (
+              {admin ? (
                 <>
-                  <Link href={type==='sitter' ? `/sitter/${user._id}` : `/user`}>
+                  <Link href={`/admin/profile`}>
                     <h3 className="font-normal hover:scale-105 cursor-pointer">
                       <FontAwesomeIcon icon={faUser} size="xl"/> Configuración
                     </h3>
                   </Link>
-                  <Link href={type==='sitter' ? `/sitter` : `/`}>
+                  <Link href={`/admin`}>
                     <h3
                       className="font-normal hover:scale-105 cursor-pointer"
                       onClick={handleLogOutBtn}
@@ -257,16 +215,12 @@ const NavBar = ({type}:NavBarPropType) => {
                 </>
               ) : (
                 <>
-                  <Link href={type==='sitter' ? `/sitter/login` : `/login`}>
+                  <Link href={`/admin/login`}>
                     <h3 className="font-normal hover:scale-105 cursor-pointer">
                       Ingresar
                     </h3>
                   </Link>
-                  <Link href={type==='sitter' ? `/sitter/sign-up` : `/sign-up`}>
-                    <h3 className="font-normal hover:scale-105 cursor-pointer">
-                      Registrar
-                    </h3>
-                  </Link>
+                  
                 </>
               )}
               <div className="text-xs mt-5">

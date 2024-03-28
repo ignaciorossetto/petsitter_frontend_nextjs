@@ -13,8 +13,23 @@ import useAuthRequest from '@/hooks/auth/useAuthRequest'
 const PetDashboard = () => {
     const {user, setUser} = useContext<UserContextType>(UserContext) 
     const { verifyToken } = useAuthRequest()
-    const [loading, setLoading] = useState<boolean>(true)
-    const router = useRouter()
+  const [loading, setLoading] = useState<boolean>(true)
+  const router = useRouter()
+    const handleGetSitterBtn = () => {
+        if(!user.fullAddress.address) {
+            return Swal.fire({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                icon: "warning",
+                title: `Debes agregar tu dirección en panel de usuario primero!`,
+              });
+              
+        }
+        router.push('/user/set-sitting')
+    }
 
     const display = async():Promise<void> => {
         const response = await verifyToken()     
@@ -29,7 +44,9 @@ const PetDashboard = () => {
         display()
     }, [])
 
-    const handleDeletePetBtn = async(petId:string) => {
+  const handleDeletePetBtn = async (petId: string) => {
+      const token = localStorage.getItem('psf-jwt')
+      
         Swal.fire({
             title: "Quieres borrar la mascota?",
             text: "No se puede revertir este cambio!",
@@ -41,19 +58,21 @@ const PetDashboard = () => {
             cancelButtonText: "No borrar mascota!",
           }).then(async (result) => {
             if (result.isConfirmed) {
-              Swal.fire("Mascota eliminada", "Mascota eliminada con éxito.", "success");
-                setLoading(true)
               try {
+                Swal.fire("Mascota eliminada", "Mascota eliminada con éxito.", "success");
+                  setLoading(true)
                 const response = await axios.delete(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pets/${user._id}/${petId}`, {
-                        withCredentials:true
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pets/${petId}`, {
+                    headers: {
+                          Authorization: `Bearer ${token}`
+                        }
                     }
                   );
                 setLoading(false)
               setUser(response.data.payload)
               } catch (error) {
+                Swal.fire("Mascota eliminada", "No se elimino mascota.", "error");
                 setLoading(false)
-                router.push('/error?code=3')
               }
             }
           });
@@ -64,14 +83,22 @@ const PetDashboard = () => {
     <div className='min-h-[60vh] flex flex-col w-full '>
         {loading && <FontAwesomeIcon size="2xl"  className='p-16 self-center' icon={faSpinner} spin/> }
         {!loading && 
-            <div className='flex justify-center sm:justify-normal gap-5 p-3 mb-7'>
+            <div className='hidden sm:flex  justify-center sm:justify-normal gap-5 p-3 mb-7'>
                 <Link href={'/user/pets/add'}>
-                <div className='font-medium text-lg hover:scale-105 duration-200 cursor-pointer'><FontAwesomeIcon className='h-6 w-6' icon={faPlus}/> mascota</div>
+                  <div className='font-medium text-lg hover:scale-105 duration-200 cursor-pointer'><FontAwesomeIcon className='h-6 w-6' icon={faPlus}/> mascota</div>
                 </Link>
                 <Link href={'#'}>
-                <div className='font-medium text-lg hover:scale-105 duration-200 cursor-pointer'><FontAwesomeIcon className='h-6 w-6' icon={faShop} /> tienda</div>
+                  <div className='font-medium text-lg hover:scale-105 duration-200 cursor-pointer'><FontAwesomeIcon className='h-6 w-6' icon={faShop} /> tienda</div>
                 </Link>
-            </div>
+            {
+            user?.pets.length > 0 &&
+            <div
+              onClick={handleGetSitterBtn}
+              className="font-semibold text-lg text-white hover:scale-105 p-2 -mt-1 cursor-pointer text-center rounded-xl duration-150 bg-violet-500 hover:bg-slate-500">
+                    Buscar cuidador!
+                  </div>
+              }
+              </div>
             }
             <div className='flex gap-10 flex-wrap justify-center'>
 
