@@ -41,7 +41,7 @@ type SitterProposalType = {
 
 
 const Messenger = ({ type = "user" }: { type: string }) => {
-  const { user, socket } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const searchParams = useSearchParams();
   let [messages, setMessages] = useState<MessageType[]>([]);
   let [arrivalMessage, setArrivalMessage] = useState<MessageType | null>(null);
@@ -93,61 +93,61 @@ const Messenger = ({ type = "user" }: { type: string }) => {
     });
   }, [messages]);
 
-  useEffect(() => {
-    socket.current.on("getMessage", (data: any) => {
-      setArrivalMessage({
-        sender: data?.senderId,
-        text: data?.message,
-        createdAt: Date.now(),
-      });
-    });
-  }, [socket]);
-  useEffect(() => {
-    socket.current.on("getProposal", (data: any) => {
-      Swal.fire({
-        html: `
-        <h1 id="toastTitle">Nueva propuesta de cuidado recibida!</h1> 
-        <button 
-        id="customButton"
-        >
-        Ver
-        </button>`,
-        toast: true,
-        position: 'top-right',
-        showCloseButton: false,
-        showConfirmButton: false,
-        timer: 3000,
-        didOpen: () => {
-          // Attach a click event to the custom button
-          const customButton = document.getElementById('customButton');
-          const toastTitle = document.getElementById('toastTitle');
-          if (customButton) {
-            customButton.addEventListener('click', handleConfirm);
-            customButton.style.padding = '10px';
-            customButton.style.fontSize = '18px';
-            customButton.style.color = 'white';
-            customButton.style.backgroundColor = 'purple';
-            customButton.style.borderRadius = '20px';
-            customButton.style.fontWeight = 'bold';
-            toastTitle!.style.fontWeight = 'bold';
-            toastTitle!.style.fontSize = '22px';
-            toastTitle!.style.marginBottom = '5px';
-          }
-        },
-      });
-      const dates = data?.message?.dates
-      console.log(data.message.sitterId)
-      setSitterProposal({
-        startDate: new Date(dates[0]).toLocaleDateString(),
-        endDate: new Date(dates[1]).toLocaleDateString(),
-        totalOfDays: data.message.totalOfDays,
-        totalPrice: data.message.totalPrice,
-        userId: data.message.userId,
-        sitterId: data.message.sitterId,
-        preferenceId: ''
-      });
-    });
-  }, [socket]);
+  // useEffect(() => {
+  //   socket.current.on("getMessage", (data: any) => {
+  //     setArrivalMessage({
+  //       sender: data?.senderId,
+  //       text: data?.message,
+  //       createdAt: Date.now(),
+  //     });
+  //   });
+  // }, [socket]);
+  // useEffect(() => {
+  //   socket.current.on("getProposal", (data: any) => {
+  //     Swal.fire({
+  //       html: `
+  //       <h1 id="toastTitle">Nueva propuesta de cuidado recibida!</h1> 
+  //       <button 
+  //       id="customButton"
+  //       >
+  //       Ver
+  //       </button>`,
+  //       toast: true,
+  //       position: 'top-right',
+  //       showCloseButton: false,
+  //       showConfirmButton: false,
+  //       timer: 3000,
+  //       didOpen: () => {
+  //         // Attach a click event to the custom button
+  //         const customButton = document.getElementById('customButton');
+  //         const toastTitle = document.getElementById('toastTitle');
+  //         if (customButton) {
+  //           customButton.addEventListener('click', handleConfirm);
+  //           customButton.style.padding = '10px';
+  //           customButton.style.fontSize = '18px';
+  //           customButton.style.color = 'white';
+  //           customButton.style.backgroundColor = 'purple';
+  //           customButton.style.borderRadius = '20px';
+  //           customButton.style.fontWeight = 'bold';
+  //           toastTitle!.style.fontWeight = 'bold';
+  //           toastTitle!.style.fontSize = '22px';
+  //           toastTitle!.style.marginBottom = '5px';
+  //         }
+  //       },
+  //     });
+  //     const dates = data?.message?.dates
+  //     console.log(data.message.sitterId)
+  //     setSitterProposal({
+  //       startDate: new Date(dates[0]).toLocaleDateString(),
+  //       endDate: new Date(dates[1]).toLocaleDateString(),
+  //       totalOfDays: data.message.totalOfDays,
+  //       totalPrice: data.message.totalPrice,
+  //       userId: data.message.userId,
+  //       sitterId: data.message.sitterId,
+  //       preferenceId: ''
+  //     });
+  //   });
+  // }, [socket]);
 
   // Conditions to set displayed messages
   useEffect(() => {
@@ -167,17 +167,17 @@ const Messenger = ({ type = "user" }: { type: string }) => {
     }
     const obj: MessageType = {
       conversationId: selectedConv,
-      sender: user._id,
+      sender: user?._id as string,
       text: msgBox,
     };
     const socketObj = {
-      senderId: user._id,
+      senderId: user?._id,
       otherUserId: selectedReceiver?._id,
       message: msgBox,
     };
     try {
       const jwt = localStorage.getItem("psf-jwt");
-      socket.current.emit("sendMessage", socketObj);
+      // socket.current.emit("sendMessage", socketObj);
       await postMessage(jwt, obj);
       setMessages([...messages, obj]);
     } catch (error) {
@@ -190,17 +190,17 @@ const Messenger = ({ type = "user" }: { type: string }) => {
   const handleSendMsg = async (e: React.MouseEvent<HTMLDivElement>) => {
     const obj: MessageType = {
       conversationId: selectedConv,
-      sender: user._id,
+      sender: user?._id as string,
       text: msgBox,
     };
     const socketObj = {
-      senderId: user._id,
+      senderId: user?._id,
       otherUserId: selectedReceiver?._id,
       message: msgBox,
     };
     try {
       const jwt = localStorage.getItem("psf-jwt");
-      socket.current.emit("sendMessage", socketObj);
+      // socket.current.emit("sendMessage", socketObj);
       await postMessage(jwt, obj);
       setMessages([...messages, obj]);
     } catch (error) {
@@ -214,7 +214,7 @@ const Messenger = ({ type = "user" }: { type: string }) => {
     setLoadingConversationsMenu(true);
     try {
       const jwt = localStorage.getItem("psf-jwt");
-      const data = await getConversations(jwt, user._id);
+      const data = await getConversations(jwt, user?._id as string);
       setConversationsArray(data);
       setLoadingConversationsMenu(false);
     } catch (error) {
@@ -247,7 +247,7 @@ const Messenger = ({ type = "user" }: { type: string }) => {
               const sitterId = type !== 'sitter' ? selectedReceiver?._id : user?._id
               const userId = type !== 'sitter' ? user?._id : selectedReceiver?._id
               setLoadingProposal(true)
-              const [order, preferenceId] = await getPendingOngoingCareOrder(jwt, sitterId, userId, cancelToken)
+              const [order, preferenceId] = await getPendingOngoingCareOrder(jwt, sitterId, userId)
               if (!order) {
                 setLoadingProposal(false)
                 return setSitterProposal(null)

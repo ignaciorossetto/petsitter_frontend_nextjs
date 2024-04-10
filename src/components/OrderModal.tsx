@@ -51,7 +51,7 @@ const OrderModal: FC<Props> = ({setOpenCreateOrder, user, sitterId}) => {
     price: null,
     confirmed: false,
   })
-  const { socket } = useContext(UserContext);
+  // const { socket } = useContext(UserContext);
 
  
 
@@ -76,7 +76,7 @@ const OrderModal: FC<Props> = ({setOpenCreateOrder, user, sitterId}) => {
 
         }
         console.log(obj)
-        socket.current.emit("sendProposal", obj);
+        // socket.current.emit("sendProposal", obj);
 
 
 

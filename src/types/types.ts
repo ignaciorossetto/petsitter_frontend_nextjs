@@ -130,8 +130,8 @@ export interface SitterSignUpFormType {
 export type JWTtype = string | null;
 
 export type GeoLocSittersInfoType = {
-  lat: string;
-  lng: string;
+  lat: number;
+  lng: number;
   radius: number;
 };
 export type LoginFormType = {
@@ -167,6 +167,31 @@ export interface IUser {
   pets?: string[];
   strategy: string;
   confirmedAccount?: boolean;
+  careOrders?: ICareOrderModel[];
+}
+
+export interface IGeoSchema {
+  type: string;
+  coordinates: any[];
+  address: string;
+}
+
+export interface ISitter {
+  _id: string;
+  username: string;
+  password: string;
+  location?: IGeoSchema;
+  email: string;
+  confirmedAccount?: boolean;
+  type: string;
+  newsCheckBox?: boolean;
+  admin?: boolean;
+  strategy: string;
+  desc?: string;
+  profileImg?: string;
+  citas?: string[];
+  price?: number;
+  addressFiles?: string[];
 }
 
 export interface IBackendErrorResponse {
@@ -176,4 +201,58 @@ export interface IBackendErrorResponse {
   status: string;
   cause?: any;
   layer: string;
+}
+
+export interface ICareOrder {
+  _id?: string;
+  orderId?: string;
+  startDate: string;
+  endDate: string;
+  pets: string[];
+}
+
+export enum CareOrderStatus {
+  NOT_CONFIRMED = "not_confirmed",
+  CONFIRMED = "confirmed",
+  ON_GOING = "on_going",
+  FULLFILLED = "fullfilled",
+  CANCELLED = "cancelled",
+  EXPIRED = "expired",
+}
+
+export interface IPaymentInfo {
+  status: PaymentStatus;
+  totalPrice?: number;
+  paymentId?: string;
+  paymentDate?: Date;
+  sitterIncome?: number;
+  sitterIncomeDate?: Date;
+  pimiIncome?: number;
+}
+
+export interface ICareOrderModel {
+  _id?: string;
+  ownerId?: string;
+  pets?: PetType[] | string[];
+  contactedSitters?: string[];
+  confirmed?: boolean;
+  status?: CareOrderStatus;
+  dates: any[];
+  pricePerDay?: number;
+  sitter?: string;
+  rate?: IRate;
+  paymentInfo?: IPaymentInfo;
+}
+
+export enum PaymentStatus {
+  NOT_CONFIRMED = "not_confirmed",
+  PENDING = "pending",
+  APPROVED = "approved",
+  FAILED = "failed",
+  ERROR = "error",
+}
+
+export interface IRate {
+  rate: number;
+  review?: string;
 }

@@ -1,8 +1,6 @@
 import React, { FormEvent, useContext, useRef, useState } from "react";
 import GoogleIcon from "../../public/icons8-google-1000.svg";
 import { UserContext, UserContextType } from "@/hooks/auth/authContext";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { LoginFormUserPropsType, LoginFormType, userTypeEnum } from "@/types/types";
@@ -11,7 +9,7 @@ import LoadingPulsePaw from "./LoadingComponents/LoadingPulsePaw";
 
 
 const LoginFormUser = ({ containerClasses='', formClasses='', inputClasses='', googleBtnContainerClasses=''}: LoginFormUserPropsType) => {
-  const { setUser, socket } = useContext<UserContextType>(UserContext);
+  const { setUser } = useContext<UserContextType>(UserContext);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -37,7 +35,7 @@ const LoginFormUser = ({ containerClasses='', formClasses='', inputClasses='', g
         return router.push("/error?code=3");
       }
         setUser(response.data.payload);
-        socket.current.emit("identity", response?.data?.payload?._id);
+        // socket.current.emit("identity", response?.data?.payload?._id);
         Swal.fire({
             toast: true,
             position: "top-end",

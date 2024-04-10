@@ -1,20 +1,31 @@
 "use client"
-import { createContext, useEffect, useRef, useState } from "react";
+import { Dispatch, createContext, useEffect, useRef, useState } from "react";
 import socketio from "socket.io-client";
 import config from "@/utils/config";
-import { IUser } from "@/types/types";
+import { ICareOrder, ICareOrderModel, ISitter, IUser } from "@/types/types";
 
 
 
 export type UserContextType = {
-    user: IUser | null | undefined;
-    setUser: any;
-    socket: any;
+    user: IUser | null;
+    setUser: Dispatch<IUser | null>;
+    // socket: any;
+    sitter: ISitter | null 
+    setSitter: Dispatch<ISitter | null>
     receiver: any;
     setReceiver: any;
     setAuthJWT:any;
-    authJWT:any
+    authJWT: any;
+    careOrder: ICareOrderModel;
+    setCareOrder: Dispatch<ICareOrderModel>
 }
+
+
+const CARE_ORDER_INITIAL_STATE = {
+    dates: [],
+    pets: []
+}
+
 
 type UserContextProviderType = {
     children: React.ReactNode
@@ -26,18 +37,20 @@ export const UserContext = createContext({} as UserContextType)
 
 export const UserContextProvider = ({children}: UserContextProviderType) => {
 
-    const socket = useRef<any>(socketio(`${config.backendUrl}`, {
-        withCredentials:true,
-        reconnection:false
-    }))
+    // const socket = useRef<any>(socketio(`${config.backendUrl}`, {
+    //     withCredentials:true,
+    //     reconnection:false
+    // }))
     
-    const [user, setUser] = useState<IUser | null | undefined>();
+    const [user, setUser] = useState<IUser |null>(null);
+    const [sitter, setSitter] = useState<ISitter |null>(null);
+    const [careOrder, setCareOrder] = useState<ICareOrderModel>(CARE_ORDER_INITIAL_STATE)
     const [authJWT, setAuthJWT] = useState<string | null>(null)
     const [receiver, setReceiver] = useState<any | null>(null)
 
     useEffect(()=> {
         const storedUser = localStorage.getItem("psf-user");
-        const initialUser = storedUser !== 'undefined' && storedUser !== null ? JSON.parse(storedUser) : null;
+        const initialUser:IUser | null = storedUser !== 'undefined' && storedUser !== null ? JSON.parse(storedUser) : null;
         setUser(initialUser)
     }, [])
 
@@ -46,6 +59,19 @@ export const UserContextProvider = ({children}: UserContextProviderType) => {
     }, [user])
 
 
+     
     
-    return <UserContext.Provider value={{user, setUser, socket, receiver, setReceiver, setAuthJWT, authJWT}}>{children}</UserContext.Provider>
+    return <UserContext.Provider value={{
+        user,
+        setUser,
+        // socket,
+        sitter,
+        setSitter,
+        receiver,
+        setReceiver,
+        setAuthJWT,
+        authJWT,
+        careOrder,
+        setCareOrder
+    }}>{children}</UserContext.Provider>
 }

@@ -10,7 +10,7 @@ import Swal from 'sweetalert2'
 const LoginForm = () => {
     const [loading, setLoading] = useState(false)
     const router = useRouter();
-  const { setAdmin, socket } = useContext<AdminContextType>(AdminContext);
+  const { setAdmin } = useContext<AdminContextType>(AdminContext);
 
 
     const handleFormSubmit = async (e:FormEvent<HTMLFormElement>) => {
@@ -37,7 +37,7 @@ const LoginForm = () => {
                 icon: 'success'
             })
             setAdmin(response.payload);
-            socket.current.emit("identity", response.payload?._id);
+            // socket.current.emit("identity", response.payload?._id);
 
             Swal.fire({
                 toast: true,

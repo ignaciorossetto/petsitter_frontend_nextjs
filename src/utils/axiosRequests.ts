@@ -3,6 +3,8 @@ import config from "./config";
 import {
   GeoLocSittersInfoType,
   IBackendErrorResponse,
+  ICareOrder,
+  ICareOrderModel,
   JWTtype,
   LoginFormType,
   MessageType,
@@ -91,18 +93,24 @@ export const createOrGetConversation = async (jwt: JWTtype, obj: object) => {
 
 export const getSittersNearBy = async (
   jwt: JWTtype,
-  obj: GeoLocSittersInfoType
+  obj: GeoLocSittersInfoType,
+  careOrder: ICareOrderModel
 ) => {
   const axiosInstance = createAxiosInstance(jwt);
   try {
+    const geoQuery = `radius=${obj.radius}&lat=${obj.lat}&lng=${obj.lng}`;
+    const careQuery = `&startDate=${careOrder?.dates[0]}&endDate=${
+      careOrder?.dates[1]
+    }&pets=${String(careOrder.pets)}`;
     const response = await axiosInstance.get(
-      `/api/sitters/getSittersNearby?radius=${obj.radius}&lat=${obj.lat}&lng=${obj.lng}`
+      `/api/sitters/nearby?${geoQuery}${careQuery}`
     );
     if (response.status === 200) {
       return response.data;
     } else throw new Error();
   } catch (error) {
-    throw new Error();
+    console.log(error);
+    return false;
   }
 };
 
@@ -134,6 +142,7 @@ export const loginRequest = async (
     const response = await axiosInstance.post(url, obj);
     return response;
   } catch (error: any) {
+    console.log(error);
     const errors = error.response as AxiosResponse<IBackendErrorResponse>;
     if (errors.data.code === 404) {
       throw new Error("Email/contraseña invalida");
@@ -194,19 +203,19 @@ export const getGoogleLoggedInUserInfo = async (jwt: JWTtype) => {
 
 export const getPendingOngoingCareOrder = async (
   jwt: JWTtype,
-  sitterId: string,
-  userId: string,
+  orderId: string,
   cancelToken: CancelTokenSource
 ) => {
   const axiosInstance = createAxiosInstance(jwt);
-  const url = `api/care-orders?sitterId=${sitterId}&userId=${userId}`;
+  const url = `api/care-order/${orderId}`;
   try {
     const response = await axiosInstance.get(url, {
       cancelToken: cancelToken.token,
     });
-    return [response.data.payload[0], response.data.preferenceId];
+    console.log(response.data);
+    return response.data.payload;
   } catch (error) {
-    console.log("getPendingOngoingCareOrder: ", error);
+    console.log("getPendingOngoingCareOrder: ");
     throw new Error();
   }
 };
@@ -238,6 +247,53 @@ export const getAdminUsers = async (
     }
     throw new Error();
   } catch (error) {
+    throw new Error();
+  }
+};
+
+export const createCareOrder = async (
+  jwt: JWTtype,
+  careOrder: any,
+  cancelToken: CancelTokenSource
+) => {
+  const axiosInstance = createAxiosInstance(jwt);
+  const url = `api/care-order`;
+  try {
+    const response = await axiosInstance.post(url, careOrder, {
+      cancelToken: cancelToken.token,
+    });
+    console.log(response.data);
+    return response.data.payload;
+  } catch (error) {
+    console.log("createCareOrder: ", error);
+    throw new Error();
+  }
+};
+
+export const updateCareOrder = async (jwt: JWTtype, id: string, obj: any) => {
+  const axiosInstance = createAxiosInstance(jwt);
+  const url = `api/care-order/order/${id}`;
+  console.log("hitted");
+  try {
+    const response = await axiosInstance.put(url, obj);
+    console.log(response.data);
+    return response.data.payload;
+  } catch (error) {
+    console.log("createCareOrder: ", error);
+    throw new Error();
+  }
+};
+
+export const getContactedSitters = async (jwt: JWTtype, obj: any) => {
+  const axiosInstance = createAxiosInstance(jwt);
+  const url = `api/sitters/contactedSitters`;
+  console.log(obj);
+  try {
+    const response = await axiosInstance.post(url, obj);
+    console.log(response.data);
+    return response.data.payload;
+  } catch (error) {
+    console.log("createCareOrder: ", error);
     throw new Error();
   }
 };

@@ -18,7 +18,7 @@ const SignUpForm = ({setSubmittingForm, setEmail, setSubmittedForm}:SignUpFormPr
     values.strategy = 'local'
     try {
       setSubmittingForm(true)
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register`, values)
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users`, values)
       if(response) {
         Swal.fire({
           toast: true,

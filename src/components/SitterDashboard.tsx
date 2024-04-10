@@ -16,17 +16,17 @@ import { newAddressRequest, newProfileImgRequest } from '@/utils/axiosRequests'
 
 
 
-const UserDashboard = () => {
+const SitterDashboard = () => {
   const jwt = localStorage.getItem("psf-jwt");
     const [address, setAddress] = useState<AddressType>()
     const [loading, setLoading] = useState(false)
   const {register, handleSubmit, formState: { errors } } = useForm<any>()
   const { verifyToken } = useAuthRequest()
-  const {user, setUser} = useContext<UserContextType>(UserContext)
+  const {sitter, setSitter} = useContext<UserContextType>(UserContext)
   const [loadingProfileImg, setLoadingProfileImg] = useState<boolean>(false)
   const [loadingNewAddress, setLoadingNewAddress] = useState<boolean>(false)
   const [file, setFile] = useState<File | Blob | null>(null)
-  const [profileImg, setProfileImg] = useState(user?.profileImg)
+  const [profileImg, setProfileImg] = useState(sitter?.profileImg)
   const {isLoaded} = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
     libraries: ['places'],
@@ -62,10 +62,10 @@ useEffect(()=> {
     try {
         let formData:any = new FormData()
       formData.append('profileImg', file)
-      if (user) {
-        const type = userTypeEnum.USER
-        const data = await newProfileImgRequest(jwt, formData, type, user._id)
-        setUser(data)
+        if (sitter) {
+        const type = userTypeEnum.SITTER
+        const data = await newProfileImgRequest(jwt, formData, type, sitter._id)
+        setSitter(data)
         setLoadingProfileImg(false)
       }
     } catch (error) {
@@ -85,12 +85,18 @@ useEffect(()=> {
 
 
   const onSubmitHandler = async() => {
-    const obj = {fullAddress: address}
+    const obj = {
+      location: {
+        type: "Point",
+        coordinates: [address?.latLng?.lng, address?.latLng?.lat],
+        address: address?.address
+      }
+    }
       setLoadingNewAddress(true)
-    try {
-      const type = userTypeEnum.USER
-        const data = await newAddressRequest(jwt, obj, user!._id, type)
-        setUser(data.payload)
+      try {
+        const type = userTypeEnum.SITTER
+        const data = await newAddressRequest(jwt, obj, sitter!._id, type)
+        setSitter(data.payload)
         setLoadingNewAddress(false)
         Swal.fire({
           toast: true,
@@ -141,8 +147,8 @@ useEffect(()=> {
         }
         
         <div className='flex flex-col gap-3'>
-            <h1 className='font-semibold text-2xl'>{user?.username}</h1>
-            <p className='font-medium italic'>{user?.email}</p>
+            <h1 className='font-semibold text-2xl'>{sitter?.username}</h1>
+            <p className='font-medium italic'>{sitter?.email}</p>
             <input onChange={handleOnChangeProfileImg} type="file" placeholder='Presiona aqui para cambiar tu foto'/>
             <button onClick={handleConfirmNewProfileImg} className='px-5 py-2 bg-violet-300 hover:bg-violet-800 hover:scale-110 hover:text-white duration-200 font-medium w-fit rounded-2xl'>Confirmar cambio de foto</button>
         </div>
@@ -157,11 +163,13 @@ useEffect(()=> {
          <>
         <FontAwesomeIcon icon={faHouse} className='h-[150px] w-[150px]'/>
         <div className='flex flex-col gap-3'>
-            {user?.fullAddress?.address ? 
-            <h1 className='text-xl font-semibold'>{user?.fullAddress?.address}</h1>
+
+            {sitter?.location?.address ? 
+            <h1 className='text-xl font-semibold'>{sitter?.location?.address}</h1>
             :
-            <h1 className='text-xl font-semibold animate-bounce'>No configuraste tu domicilio!</h1>
+            <h1 className='text-xl font-semibold'>No configuraste tu domicilio!</h1>
             }
+ 
             <form onSubmit={handleSubmit(onSubmitHandler)} className='flex flex-col gap-3'>
             {
             isLoaded &&
@@ -204,4 +212,4 @@ useEffect(()=> {
   )
 }
 
-export default UserDashboard
+export default SitterDashboard

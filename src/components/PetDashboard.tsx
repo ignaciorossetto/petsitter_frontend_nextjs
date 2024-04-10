@@ -7,8 +7,9 @@ import { faPlus, faShop, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import Link from 'next/link'
 import Swal from 'sweetalert2'
 import PetCard from './PetCard'
-import { PetType } from '@/types/types'
+import { CareOrderStatus, ICareOrderModel, PetType } from '@/types/types'
 import useAuthRequest from '@/hooks/auth/useAuthRequest'
+import { parseCareOrderBtnClass, parseCareOrderStatus } from '@/utils/utilsFunctions'
 
 const PetDashboard = () => {
     const {user, setUser} = useContext<UserContextType>(UserContext) 
@@ -16,7 +17,7 @@ const PetDashboard = () => {
   const [loading, setLoading] = useState<boolean>(true)
   const router = useRouter()
     const handleGetSitterBtn = () => {
-        if(!user.fullAddress.address) {
+        if(!user?.fullAddress?.address) {
             return Swal.fire({
                 toast: true,
                 position: "top-end",
@@ -40,7 +41,7 @@ const PetDashboard = () => {
           router.push('/error?code=1')
         }
     }
-    useEffect(()=> {
+  useEffect(() => {
         display()
     }, [])
 
@@ -91,22 +92,48 @@ const PetDashboard = () => {
                   <div className='font-medium text-lg hover:scale-105 duration-200 cursor-pointer'><FontAwesomeIcon className='h-6 w-6' icon={faShop} /> tienda</div>
                 </Link>
             {
-            user?.pets.length > 0 &&
+            user?.pets?.length! > 0 &&
             <div
               onClick={handleGetSitterBtn}
               className="font-semibold text-lg text-white hover:scale-105 p-2 -mt-1 cursor-pointer text-center rounded-xl duration-150 bg-violet-500 hover:bg-slate-500">
                     Buscar cuidador!
                   </div>
+          }
+          {
+            user?.careOrders?.length! > 0 && 
+            user?.careOrders?.map((e:ICareOrderModel) => {
+              if (e.status === CareOrderStatus.NOT_CONFIRMED || e.status === CareOrderStatus.CONFIRMED || e.status === CareOrderStatus.ON_GOING) {
+                console.log(parseCareOrderBtnClass(e?.status))
+                return <div
+                  key={e._id}
+                onClick={()=>router.push(`/user/care-order/${e._id}`)}
+                className={`font-semibold text-lg text-white hover:scale-105 p-2 -mt-1 cursor-pointer text-center rounded-xl duration-150 bg-yellow-500 ${parseCareOrderBtnClass(e?.status as CareOrderStatus)} hover:bg-slate-500 animate-pulse`}>
+                      Orden: {parseCareOrderStatus(e.status)}
+                </div>
               }
+              else 
+                return <div
+                onClick={handleGetSitterBtn}
+                className="font-semibold text-lg text-white hover:scale-105 p-2 -mt-1 cursor-pointer text-center rounded-xl duration-150 bg-blue-500 hover:bg-slate-500">
+                      Historial de cuidados!
+                </div>
+            })
+          }
               </div>
             }
             <div className='flex gap-10 flex-wrap justify-center'>
 
-        {!loading && user?.pets.map((petInfo:PetType)=>
-            <PetCard key={petInfo._id} handleDeletePetBtn={handleDeletePetBtn} petInfo={petInfo}/>
-            )
-        }
-            {user?.pets.length === 0 && 
+        {!loading &&
+          <>
+        {
+          
+          user?.pets?.map((petInfo: any) => (
+            <PetCard key={petInfo?._id} handleDeletePetBtn={handleDeletePetBtn} petInfo={petInfo}/>)
+        )
+      }
+      </>
+    }
+            {user?.pets?.length === 0 && 
                 <div>
                     <h2 className='p-2 text-center text-2xl sm:text-3xl font-semibold'>
                         No tienes ninguna mascota! 

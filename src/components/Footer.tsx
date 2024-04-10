@@ -8,9 +8,9 @@ const Footer = () => {
         <div className='px-10 w-full flex justify-between'>
             <div className='hidden sm:flex sm:flex-col  gap-2 w-7/12'>
                 <h4 className=' text-xl font-bold text-black'>Recibí las ultimas novedades!</h4>
-                <div className=' flex gap-2'>
+                <div className=' flex gap-2 p-2'>
                 <input type='email' className='bg-white border-black border placeholder:text-slate-400 focus:outline-none  focus:placeholder:text-slate-400 focus:bg-white  p-2 rounded-xl' placeholder='Ingresa tu email'  />
-                <button className='text-lg text-black border-black border p-2 rounded-xl hover:scale-105 hover:bg-violet-400 hover:border-none hover:py-[9px] '>Suscribir</button>
+                <button className='text-lg text-black border-black border p-2 rounded-xl hover:scale-110 active:scale-100 duration-200 hover:bg-violet-400 hover:border-transparent  '>Suscribir</button>
                 </div>
             </div>
             <div className='flex gap-3 items-center justify-center sm:justify-end w-full sm:w-6/12 pr-0 sm:pr-5'>
@@ -20,7 +20,7 @@ const Footer = () => {
             </div>      
         </div>
         <div className='pb-5'>
-                <p className='text-center text-black font-medium'>© 2023 PetSitterFinder.com.ar ™ </p>
+                <p className='text-center text-black font-medium'>© 2023 Pimi app ™ </p>
         </div>
     </div>
   )

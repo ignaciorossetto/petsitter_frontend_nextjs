@@ -17,7 +17,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { UserContext, UserContextType } from "@/hooks/auth/authContext";
 import Image from "next/image";
 import Swal from "sweetalert2";
-import { NavBarPropType } from "@/types/types";
+import { NavBarPropType, userTypeEnum } from "@/types/types";
 import { getGoogleLoggedInUserInfo } from "@/utils/axiosRequests";
 
 const NavBar = ({type}:NavBarPropType) => {
@@ -27,12 +27,14 @@ const NavBar = ({type}:NavBarPropType) => {
   const access_token: string | null = searchParams.get("access_token");
   const [loading, setLoading] = useState<boolean>(false);
   const [showNavBarModal, setShowNavBarModal] = useState<boolean>(false);
-  const { user, setUser, socket } = useContext<UserContextType>(UserContext);
+  const { user, sitter, setUser, setSitter } = useContext<UserContextType>(UserContext);
 
 
 
   const handleLogOutBtn = () => {
-    socket.current.emit('logout')
+    // socket.current.emit('logout')
+    
+    setSitter(null);
     setUser(null);
     localStorage.setItem('psf-jwt', '')
     
@@ -45,7 +47,7 @@ const NavBar = ({type}:NavBarPropType) => {
       icon: 'success',
       title: 'Nos vemos pronto!'
     });
-    if (type==='sitter') return router.push('/sitter');
+    if (type===userTypeEnum.SITTER) return router.push('/sitter');
     return router.push('/');
   };
 
@@ -64,7 +66,7 @@ const NavBar = ({type}:NavBarPropType) => {
         icon: "success",
         title: `Bienvenido ${payload.username}!`,
       });
-      socket.current.emit("identity", payload._id);
+      // socket.current.emit("identity", payload._id);
       router.push("/user/pets")
     } catch (error) {
       console.log('error', error);
@@ -81,7 +83,7 @@ const NavBar = ({type}:NavBarPropType) => {
   }, [])
 
   return (
-    <nav className="z-10 shadow-2xl w-full bg-white rounded-2xl  h-[8rem] flex justify-between items-center p-10 mb-5 sticky top-0">
+    <nav className="z-10 shadow-2xl w-[100vh!] bg-white rounded-2xl  h-[8rem] flex justify-between items-center p-10 mb-5 sticky top-0">
       <div
         className="md:hidden cursor-pointer hover:scale-110"
         onClick={() => setShowNavBarModal((prev) => !prev)}
@@ -109,7 +111,7 @@ const NavBar = ({type}:NavBarPropType) => {
               className="w-10 h-10 text-center"
             />
           </div>
-        ) : user ? (
+        ) : user || sitter ? (
           <>
           {
             type!=='sitter' &&
@@ -125,17 +127,7 @@ const NavBar = ({type}:NavBarPropType) => {
               </Link>
             </span>
           }
-            <span
-              className={`cursor-pointer
-                hover:scale-110 duration-200 ${type==='sitter' ? 'bg-gradient-to-tr from-lime-400 to-emerald-300' : 'bg-violet-300'} p-3 rounded-lg w-[105px] text-center`}
-            >
-              <Link href={`${type==='sitter' ? '/sitter/chat' : '/user/chat'}`}>
-                <FontAwesomeIcon size="xl" icon={faCommentDots}  className="text-black"/>
-                  <span
-                    className="ml-2"
-                  >chat</span>
-              </Link>
-            </span>
+
             <span
               className={`cursor-pointer
                 hover:scale-110 duration-200 ${type==='sitter' ? 'bg-gradient-to-tr from-lime-400 to-emerald-300' : 'bg-violet-300'} p-3 rounded-lg`}
@@ -147,14 +139,14 @@ const NavBar = ({type}:NavBarPropType) => {
                 />
               </button>
             </span>
-            {user?.profileImg ? (
+            {user?.profileImg || sitter?.profileImg ? (
               <span
                 className="cursor-pointer
                     hover:scale-110 duration-200 rounded-lg hover:shadow-2xl"
               >
-                <Link href={`${type==='sitter' ? `/sitter/${user._id}` : '/user'}`}>
+                <Link href={`${type==='sitter' ? `/sitter/${sitter?._id}` : '/user'}`}>
                   <Image
-                    src={user?.profileImg}
+                    src={user?.profileImg || sitter?.profileImg || ""}
                     alt="profile-image"
                     height={51}
                     width={51}
@@ -167,7 +159,7 @@ const NavBar = ({type}:NavBarPropType) => {
                 className={`cursor-pointer
                     hover:scale-110 duration-200 ${type==='sitter' ? 'bg-gradient-to-tr from-lime-400 to-emerald-300' : 'bg-violet-300'} p-3 rounded-lg`}
               >
-                <Link href={`${type==='sitter' ? `/sitter/${user._id}` : '/user'}`}>
+                <Link href={`${type==='sitter' ? `/sitter/${sitter?._id}` : '/user'}`}>
                   <FontAwesomeIcon size="xl" icon={faUser} className="text-black"/>
                 </Link>
               </span>
@@ -208,14 +200,8 @@ const NavBar = ({type}:NavBarPropType) => {
               <h1 className=" text-center text-xl font-semibold mt-4">MENU</h1>
               <br />
               <br />
-              {user && (
+              {user  && (
                 <>
-                <Link href={type==='sitter' ? '/sitter/chat' : `/user/chat`}>
-                  <h3 className="font-medium mt-1 p-2 cursor-pointer rounded-xl duration-150 hover:bg-slate-300">
-                    <FontAwesomeIcon size="xl" icon={faCommentDots} />{" "}
-                    Chat
-                  </h3>
-                </Link>
                 {
                   type!=='sitter' && 
                 
@@ -239,9 +225,9 @@ const NavBar = ({type}:NavBarPropType) => {
               )}
             </div>
             <div className="pb-5 ">
-              {user ? (
+              {user || sitter ? (
                 <>
-                  <Link href={type==='sitter' ? `/sitter/${user._id}` : `/user`}>
+                  <Link href={type==='sitter' ? `/sitter/${sitter?._id}` : `/user`}>
                     <h3 className="font-normal hover:scale-105 cursor-pointer">
                       <FontAwesomeIcon icon={faUser} size="xl"/> Configuración
                     </h3>

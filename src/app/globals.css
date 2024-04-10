@@ -3,7 +3,10 @@
 @tailwind utilities;
 
 body {
-  @apply max-w-[90%] w-[1080px] mx-auto;
+  @apply 
+  max-w-[90%] 
+  /* w-[1080px]  */
+  mx-auto;
 }
 
 .scale-animation {
@@ -12,4 +15,12 @@ body {
 
 .p-btn {
   @apply px-3 py-2 rounded-xl
+}
+
+.parrafo{
+  background-color: black;
+  color: white;
+  font-style: italic;
+  padding: 20px;
+  border-radius: 10px;
 }

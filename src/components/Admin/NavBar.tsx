@@ -26,12 +26,12 @@ const NavBar = () => {
   const access_token: string | null = searchParams.get("access_token");
   const [loading, setLoading] = useState<boolean>(false);
   const [showNavBarModal, setShowNavBarModal] = useState<boolean>(false);
-  const { admin, setAdmin, socket } = useContext<AdminContextType>(AdminContext);
+  const { admin, setAdmin } = useContext<AdminContextType>(AdminContext);
 
 
 
   const handleLogOutBtn = () => {
-    socket.current.emit('logout')
+    // socket.current.emit('logout')
     setAdmin(null);
     localStorage.setItem('psf-admin-jwt', '')
     
@@ -63,7 +63,7 @@ const NavBar = () => {
         icon: "success",
         title: `Bienvenido ${payload.username}!`,
       });
-      socket.current.emit("identity", payload._id);
+      // socket.current.emit("identity", payload._id);
     } catch (error) {
       console.log('error', error);
       router.push("/error?code=1");

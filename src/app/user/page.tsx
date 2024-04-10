@@ -7,7 +7,7 @@ const page = () => {
   return (
     <>
     <NavBar />
-      <UserDashboard type='user'/>
+      <UserDashboard/>
     <Footer/>
     </>
   )

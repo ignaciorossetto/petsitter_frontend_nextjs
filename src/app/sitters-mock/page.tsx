@@ -2,14 +2,14 @@
 import { UserContext } from '@/hooks/auth/authContext'
 import React, { SetStateAction, useContext, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import socketio from "socket.io-client";
+// import socketio from "socket.io-client";
 
 
 const Sitters = () => {
   const searchParams = useSearchParams();
   const { setUser} = useContext(UserContext) 
   const [msg, setMsg] = useState('') 
-  const socket = useRef<any>()
+  // const socket = useRef<any>()
   // Reginald Lebsack
   const [sitterId, setSitterId] = useState<any>()
   const [ownerId, setOwnerId] = useState<any>()
@@ -27,25 +27,25 @@ const Sitters = () => {
       otherUserId: ownerId,
       message: input
   }
-        socket.current.emit('sendMessage', socketObj)
+        // socket.current.emit('sendMessage', socketObj)
         setMessages([...messages, input])
         setInput('')
     }
 
-  useEffect(()=> {
-    socket.current= socketio(`http://localhost:5000`, {withCredentials:true})
-    socket.current.on('getMessage', (data:any)=> {
-      setMessages([...messages, data.message])
-  })
-  },[messages])
+  // useEffect(()=> {
+  //   socket.current= socketio(`http://localhost:5000`, {withCredentials:true})
+  //   socket.current.on('getMessage', (data:any)=> {
+  //     setMessages([...messages, data.message])
+  // })
+  // },[messages])
 
   useEffect(()=> {
     const sid = searchParams.get("sid")
     const ownerid = searchParams.get("oid")
     setSitterId(sid!)
     setOwnerId(ownerid)
-    socket.current.emit('identity', sid)
-  }, [socket])
+    // socket.current.emit('identity', sid)
+  }, [])
   return (
     <>
         <h1 className='text-2xl p-10'>sitterID: {sitterId}</h1>
