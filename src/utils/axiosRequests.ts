@@ -9,7 +9,6 @@ import {
   LoginFormType,
   MessageType,
 } from "@/types/types";
-import { useRouter } from "next/router";
 
 const createAxiosInstance = (jwt: JWTtype = null) => {
   const axiosInstance = axios.create({
@@ -262,21 +261,27 @@ export const createCareOrder = async (
     const response = await axiosInstance.post(url, careOrder, {
       cancelToken: cancelToken.token,
     });
-    console.log(response.data);
     return response.data.payload;
-  } catch (error) {
-    console.log("createCareOrder: ", error);
-    throw new Error();
+  } catch (error: any) {
+    error.response as AxiosResponse<IBackendErrorResponse>;
+    throw new Error(error?.response?.data.cause || "Error de servidor");
   }
 };
 
-export const updateCareOrder = async (jwt: JWTtype, id: string, obj: any) => {
+export const updateCareOrder = async (
+  jwt: JWTtype,
+  id: string,
+  obj: any,
+  updateUser: boolean = false
+) => {
   const axiosInstance = createAxiosInstance(jwt);
-  const url = `api/care-order/order/${id}`;
-  console.log("hitted");
+  let url = `api/care-order/order/${id}`;
+  if (updateUser) {
+    url = `api/care-order/order/${id}?updateUser=true`;
+  }
+
   try {
     const response = await axiosInstance.put(url, obj);
-    console.log(response.data);
     return response.data.payload;
   } catch (error) {
     console.log("createCareOrder: ", error);
@@ -287,13 +292,40 @@ export const updateCareOrder = async (jwt: JWTtype, id: string, obj: any) => {
 export const getContactedSitters = async (jwt: JWTtype, obj: any) => {
   const axiosInstance = createAxiosInstance(jwt);
   const url = `api/sitters/contactedSitters`;
-  console.log(obj);
   try {
     const response = await axiosInstance.post(url, obj);
-    console.log(response.data);
     return response.data.payload;
   } catch (error) {
     console.log("createCareOrder: ", error);
+    throw new Error();
+  }
+};
+
+export const deleteCareOrder = async (
+  jwt: JWTtype,
+  id: string,
+  ownerId: string
+) => {
+  const axiosInstance = createAxiosInstance(jwt);
+  const url = `api/care-order/${id}?ownerId=${ownerId}`;
+  try {
+    const response = await axiosInstance.delete(url);
+    return response.data.payload;
+  } catch (error) {
+    throw new Error();
+  }
+};
+export const getSitterInfoForConfirmedOrder = async (
+  jwt: JWTtype,
+  careOrderId: string,
+  sitterId: string
+) => {
+  const axiosInstance = createAxiosInstance(jwt);
+  const url = `api/care-order/${careOrderId}?sitterId=${sitterId}`;
+  try {
+    const response = await axiosInstance.get(url);
+    return response.data.payload;
+  } catch (error) {
     throw new Error();
   }
 };

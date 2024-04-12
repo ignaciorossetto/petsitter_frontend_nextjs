@@ -13,19 +13,12 @@ import MapSitterCard from '@/components/MapSitterCard'
 import MapSitterInfo from '@/components/MapSitterInfo'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { haversine_distance } from '@/utils/utilsFunctions'
+import LoadingPulsePaw from '@/components/LoadingComponents/LoadingPulsePaw'
 
-const libraries = 'places'
+const libraries =[ 'places']
 
-function haversine_distance(mk1:any, mk2:any) {
-    var R = 6371.0710; // Radius of the Earth in miles
-    var rlat1 = mk1.lat * (Math.PI/180); // Convert degrees to radians
-    var rlat2 = mk2.lat * (Math.PI/180); // Convert degrees to radians
-    var difflat = rlat2-rlat1; // Radian difference (latitudes)
-    var difflon = (mk2.lng-mk1.lng) * (Math.PI/180); // Radian difference (longitudes)
 
-    var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
-    return d;
-  }
 
 const GetSitterView = () => {
     const [isSiblingComponentActive, setSiblingComponentActive] = useState(false);
@@ -41,10 +34,9 @@ const GetSitterView = () => {
     const [selectedMarkerID, setSelectedMarkerID] = useState(null);
     const router = useRouter()
 
-    const aa = [libraries]
     const {isLoaded} = useLoadScript({
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
-        libraries: aa as ("places" | "drawing" | "geometry" | "localContext" | "visualization")[],
+        libraries: libraries as ("places" | "drawing" | "geometry" | "localContext" | "visualization")[],
     })
     const [radius, setRadius] = useState(3000)
     const sitterContainerRef = useRef<HTMLDivElement>(null)
@@ -54,6 +46,11 @@ const GetSitterView = () => {
     const orderId = searchParams.get('careOrder') || careOrder._id || null
     const handleContactSitterBtn = async () => {
         setLoadingSitterContact(true)
+        if (careOrder.contactedSitters?.includes(sitterInfo._id)) {
+            router.push(`/user/care-order/${careOrder._id}?openChat=${sitterInfo._id}`)
+            setLoadingSitterContact(false)
+            return
+        }
         const obj = {
             $push: {
                 contactedSitters: sitterInfo._id
@@ -171,7 +168,7 @@ const GetSitterView = () => {
           onClick={handleBoton}
           >boton</button> */}
     <section>
-        {!isLoaded && <FontAwesomeIcon icon={faSpinner} size='2xl' spin className='flex justify-center mt-20 h-16 w-full' />}
+        {!isLoaded && <LoadingPulsePaw containerClasses='text-center text-[25px] min-h-[500px] pt-20'/>}
         {isLoaded && 
         <div className='h-full w-full flex flex-col-reverse sm:flex-row'>
                       <div
@@ -230,7 +227,7 @@ const GetSitterView = () => {
                        icon={{
                         url:"/home.png" 
                     }}
-                        animation={google.maps.Animation.DROP}
+                        animation={element?._id === clickedMarkerID ? google.maps.Animation.BOUNCE : google.maps.Animation.DROP}
                        onClick={() => {
                             handleMarkerClick(element)
                            handleSitterCard(element)
@@ -254,6 +251,7 @@ const GetSitterView = () => {
                               loadingSitterContact={loadingSitterContact}
                               setSitterInfo={setSitterInfo}
                               sitterInfo={sitterInfo}
+                              careOrder={careOrder}
                           />
                           }
             </div>

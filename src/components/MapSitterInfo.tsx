@@ -1,4 +1,5 @@
 "use client"
+import { ICareOrderModel } from '@/types/types'
 import { faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useState } from 'react'
@@ -8,9 +9,10 @@ interface IMapSitterInfoProps {
     setSitterInfo: (s:any)=> void,
     sitterInfo: any,
     loadingSitterContact: boolean,
+    careOrder: ICareOrderModel
 }
 
-const MapSitterInfo = ({sitterInfo, loadingSitterContact, handleContactSitterBtn, setSitterInfo}: IMapSitterInfoProps) => {
+const MapSitterInfo = ({sitterInfo, loadingSitterContact, handleContactSitterBtn, setSitterInfo, careOrder}: IMapSitterInfoProps) => {
     const [moreView, setMoreView] = useState(false)
     return (
         <div
@@ -35,7 +37,8 @@ const MapSitterInfo = ({sitterInfo, loadingSitterContact, handleContactSitterBtn
             </div>
         :
         <div onClick={handleContactSitterBtn} className=' bg-violet-400 w-[250px] h-[70px] flex items-center justify-center text-xl font-semibold p-4 rounded-2xl hover:scale-110 duration-200 cursor-pointer hover:bg-violet-800 hover:text-white ease-in-out'>
-        Contactar Cuidador!
+                                {careOrder.contactedSitters?.includes(sitterInfo._id) ? "ver chat" : "Contactar Cuidador!" }
+        
         </div>
     }
           </div>

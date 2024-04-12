@@ -70,3 +70,31 @@ export const calculateAmountOfDays = (dates: any) => {
 
   return Difference_In_Days;
 };
+
+export function haversine_distance(mk1: any, mk2: any) {
+  var R = 6371.071; // Radius of the Earth in miles
+  var rlat1 = mk1.lat * (Math.PI / 180); // Convert degrees to radians
+  var rlat2 = mk2.lat * (Math.PI / 180); // Convert degrees to radians
+  var difflat = rlat2 - rlat1; // Radian difference (latitudes)
+  var difflon = (mk2.lng - mk1.lng) * (Math.PI / 180); // Radian difference (longitudes)
+
+  var d =
+    2 *
+    R *
+    Math.asin(
+      Math.sqrt(
+        Math.sin(difflat / 2) * Math.sin(difflat / 2) +
+          Math.cos(rlat1) *
+            Math.cos(rlat2) *
+            Math.sin(difflon / 2) *
+            Math.sin(difflon / 2)
+      )
+    );
+  return d;
+}
+
+export const createGoogleMapsUrl = (lat: string, lng: string) => {
+  const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+
+  return url;
+};

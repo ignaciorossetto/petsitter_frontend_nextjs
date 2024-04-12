@@ -1,9 +1,9 @@
 "use client"
 
 import { UserContext, UserContextType } from "@/hooks/auth/authContext"
-import { ICareOrder, ICareOrderModel, PetType } from "@/types/types"
+import { ICareOrderModel } from "@/types/types"
 import { createCareOrder } from "@/utils/axiosRequests"
-import { faArrowLeft, faArrowLeftLong, faPaw } from "@fortawesome/free-solid-svg-icons"
+import {  faArrowLeftLong, faPaw } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import axios from "axios"
 import Image from "next/image"
@@ -21,7 +21,12 @@ const CARE_ORDER_INITIAL_STATE = {
 const OrderForm = () => {
     const [orderObj, setOrderObj] = useState<ICareOrderModel>(CARE_ORDER_INITIAL_STATE)
     const [loading, setLoading] = useState(false)
-    const { user, setCareOrder } = useContext<UserContextType>(UserContext) 
+    const [error, setError] = useState({
+        status: false,
+        message: "",
+        overlapOrderId: ""
+    })
+    const { user, setUser, setCareOrder } = useContext<UserContextType>(UserContext) 
     const router = useRouter()
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,7 +84,8 @@ const OrderForm = () => {
         let cancelToken = axios.CancelToken.source();
         try {
             const response = await createCareOrder(jwt, obj, cancelToken)
-            setCareOrder({...orderObj, _id: response._id} )
+            setCareOrder({ ...orderObj, _id: response.newCareOrder._id })
+            setUser(response.updatedUser)
             Swal.fire({
                 title: 'Órden de cuidado creada!',
                 toast: true,
@@ -90,7 +96,13 @@ const OrderForm = () => {
                 showConfirmButton: false
             })
             router.push('/user/get-sitter')
-        } catch (error) {
+        } catch (error: any) {
+            setError({
+                status: true,
+                message: `Hay una orden de cuidado creada en las mismas fechas o supersponiendo fechas con las mismas mascotas. Debes eliminarla y crear una orden nueva o modificar la misma
+                La orden es la siguiente:`,
+                overlapOrderId: error.message
+            })
             Swal.fire({
                 title: 'Hubo un error creando la órden!',
                 toast: true,
@@ -100,6 +112,9 @@ const OrderForm = () => {
                 showCancelButton: false,
                 showConfirmButton: false
             })
+        } finally {
+        setLoading(false)
+
         }
     }
 
@@ -116,7 +131,7 @@ const OrderForm = () => {
           </Link>
           <form
               action=""
-              className='mt-5 min-h-[700px] min-w-[600px] flex flex-col gap-3 bg-white/30 p-5 rounded-xl text-[18px] sm:text-[20px]'
+              className='mt-5 min-h-[700px] w-[800px] flex flex-col gap-3 bg-white/30 p-5 rounded-xl text-[18px] sm:text-[20px]'
               onSubmit={handleSubmit}
 
           >
@@ -225,6 +240,19 @@ const OrderForm = () => {
                       </button>
                   </>
                       
+              }
+              {
+                  error.status &&
+                  <div
+                          className="p-10 bg-white/75 text-red-500"
+                          >
+                          {error.message} <Link
+                              href={`/user/care-order/${error.overlapOrderId}`}
+                              className="underline cursor-pointer hover:font-bold hover:text-black duration-200"
+                              >
+                              
+                              Click Aquí</Link>
+                    </div>
               }
           </form>
     </div>
