@@ -7,9 +7,9 @@ import { Suspense } from "react"
 const page = () => {
   return (
     <Suspense>
-    <NavBar />
-      <OrderForm />
-    <Footer/>
+      <NavBar />
+        <OrderForm />
+      <Footer/>
     </Suspense>
   )
 }
