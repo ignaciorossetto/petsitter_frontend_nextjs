@@ -32,13 +32,14 @@ const NavBar = ({type}:NavBarPropType) => {
 
 
   const handleLogOutBtn = () => {
+      
     // socket.current.emit('logout')
     
     setSitter(null);
     setUser(null);
     localStorage.setItem('psf-jwt', '')
     
-    Swal.fire({
+     Swal.fire({
       toast: true,
       position: 'top-end',
       showConfirmButton: false,

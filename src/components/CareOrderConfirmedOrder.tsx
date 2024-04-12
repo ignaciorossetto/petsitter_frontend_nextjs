@@ -72,6 +72,9 @@ const CareOrderConfirmedOrder = ({
 
     return (
         <>
+            {
+                user && 
+            
       
     <div
                               className='w-[40%] h-auto bg-white rounded-xl shadow-2xl shadow-black/40 p-5  overflow-y-auto '
@@ -193,9 +196,7 @@ const CareOrderConfirmedOrder = ({
                               /> */}
 
         </div>
-      <>
-      
-        </>
+                }
       </>
   )
 }

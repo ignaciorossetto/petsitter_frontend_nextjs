@@ -43,7 +43,13 @@ const PetDashboard = () => {
     }
   useEffect(() => {
         display()
-    }, [])
+  }, [])
+  
+  useEffect(() => {
+    if (!user) {
+      router.push('/')
+    }
+    }, [user])
 
   const handleDeletePetBtn = async (petId: string) => {
       const token = localStorage.getItem('psf-jwt')
@@ -81,6 +87,10 @@ const PetDashboard = () => {
 
 
   return (
+    <>
+    {
+        user &&
+    
     <div className='min-h-[60vh] flex flex-col w-full '>
         {loading && <FontAwesomeIcon size="2xl"  className='p-16 self-center' icon={faSpinner} spin/> }
         {!loading && 
@@ -141,7 +151,9 @@ const PetDashboard = () => {
                 </div> 
             }
         </div>
-    </div>
+        </div>
+      }
+      </>
   )
 }
 
