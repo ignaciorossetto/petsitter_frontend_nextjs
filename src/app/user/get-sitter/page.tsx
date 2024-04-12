@@ -159,7 +159,7 @@ const GetSitterView = () => {
     }
 
     return (
-    <Suspense>
+        <Suspense fallback={<LoadingPulsePaw containerClasses='text-center text-[25px] min-h-[500px] pt-20'/> }>
           <NavBar />
           {/* <button
           onClick={handleBoton}
