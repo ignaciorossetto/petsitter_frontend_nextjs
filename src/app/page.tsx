@@ -2,7 +2,7 @@
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
-import { Suspense, useContext } from "react";
+import { useContext } from "react";
 import { UserContext } from "@/hooks/auth/authContext";
 import Swal from "sweetalert2";
 import LoginFormUser from "@/components/LoginFormUser";
@@ -27,7 +27,7 @@ export default function Home() {
   }
 
   return (
-      <Suspense>
+      <>
         <NavBar />
         <section className="h-[100vh] xs:h-[100vh] sm:h-[100vh] flex flex-col items-center relative">
           <div className='bg-[url("/vacation2.jpg")] bg-cover bg-bottom sm:bg-right-bottom relative h-[650px] w-full'>
@@ -70,6 +70,6 @@ export default function Home() {
         />
       }
         <Footer />
-      </Suspense>
+      </>
   );
 }
