@@ -1,7 +1,7 @@
 "use client"
 import Footer from '@/components/Footer'
 import NavBar from '@/components/NavBar'
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
+import React, { Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { GoogleMap, MarkerF, useLoadScript } from '@react-google-maps/api'
 import { UserContext } from '@/hooks/auth/authContext'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -159,7 +159,7 @@ const GetSitterView = () => {
     }
 
     return (
-    <div>
+    <Suspense>
           <NavBar />
           {/* <button
           onClick={handleBoton}
@@ -258,7 +258,7 @@ const GetSitterView = () => {
     <Footer/>
 
 
-            </div>
+            </Suspense>
   )
 }
 

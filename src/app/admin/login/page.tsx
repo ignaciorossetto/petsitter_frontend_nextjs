@@ -1,15 +1,15 @@
 import LoginForm from '@/components/Admin/LoginForm'
 import NavBar from '@/components/Admin/NavBar'
 import Footer from '@/components/Footer'
-import React from 'react'
+import React, { Suspense } from 'react'
 
 const page = () => {
   return (
-      <div>
+    <Suspense>
         <NavBar/>   
         <LoginForm />
         <Footer />
-    </div>
+    </Suspense>
   )
 }
 

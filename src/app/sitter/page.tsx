@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
 import LoginFormSitter from "@/components/LoginFormSitter";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export default function Home() {
   const router = useRouter()
@@ -13,7 +14,7 @@ export default function Home() {
   }
 
   return (
-      <>
+      <Suspense>
         <NavBar type='sitter'/>
         <section className="h-[130vh] xs:h-[100vh] sm:h-[100vh] flex flex-col items-center">
           <div className='bg-[url("/sitter-landing.jpg")] bg-cover bg-right sm:bg-right-center relative h-[650px] w-full'>
@@ -71,6 +72,6 @@ export default function Home() {
           </div>
         </section>
         <Footer />
-      </>
+      </Suspense>
   );
 }

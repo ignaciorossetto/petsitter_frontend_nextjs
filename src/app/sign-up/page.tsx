@@ -1,7 +1,7 @@
 "use client"
 import Footer from '@/components/Footer'
 import NavBar from '@/components/NavBar'
-import { useRef, useState } from 'react'
+import { Suspense, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
@@ -32,7 +32,7 @@ const SignUpView = () => {
   };
 
   return (
-    <>
+    <Suspense>
     <NavBar/>
     <section className='flex flex-col items-center justify-center w-full bg-[url("/gradient.png")] bg-cover rounded-2xl min-h-[80vh] shadow-2xl'>
       {
@@ -86,7 +86,7 @@ const SignUpView = () => {
     </section>
     <Footer/>
 
-    </>
+    </Suspense>
   )
 }
 
