@@ -76,8 +76,8 @@ const NewPetForm = () => {
     for (let index = 0; index < data.images.length; index++) {
       formData.append('images', data.images[index]);
     }
-      formData?.append("ownerId", user._id);
-      formData?.append("ownerName", user.username);
+      formData?.append("ownerId", user?._id as string);
+      formData?.append("ownerName", user?.username as string);
     try {
       setLoading(true)
     const response = await axios.post(
