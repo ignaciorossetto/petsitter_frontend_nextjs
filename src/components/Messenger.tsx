@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { Suspense, useContext, useEffect, useRef, useState } from "react";
 import Conversation from "./Conversation";
 import Message from "./Message";
 import { MessageType } from "@/types/types";
@@ -283,6 +283,7 @@ const Messenger = ({ type = "user" }: { type: string }) => {
   }, [selectedConv]);
 
   return (
+    <Suspense>
     <section className="w-full h-[80vh] flex justify-center">
       <div
         className={`${
@@ -519,7 +520,8 @@ const Messenger = ({ type = "user" }: { type: string }) => {
         </div>
       }
       </div>
-    </section>
+      </section>
+      </Suspense>
   );
 };
 

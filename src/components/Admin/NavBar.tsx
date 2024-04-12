@@ -14,7 +14,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, Suspense } from "react";
 import Image from "next/image";
 import Swal from "sweetalert2";
 import { getGoogleLoggedInUserInfo } from "@/utils/axiosRequests";
@@ -72,6 +72,7 @@ const NavBar = () => {
 
 
   return (
+    <Suspense>
     <nav className="z-10 shadow-2xl w-full bg-white rounded-2xl  h-[8rem] flex justify-between items-center p-10 mb-5 sticky top-0">
       <div
         className="sm:hidden cursor-pointer hover:scale-110"
@@ -235,7 +236,8 @@ const NavBar = () => {
           />
         </div>
       )}
-    </nav>
+      </nav>
+      </Suspense>
   );
 };
 

@@ -1,7 +1,7 @@
 "use client"
 import Footer from '@/components/Footer'
 import NavBar from '@/components/NavBar'
-import React, { MouseEventHandler, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import React, { MouseEventHandler, Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { GoogleMap, MarkerF, useLoadScript } from '@react-google-maps/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faTruckMedical } from '@fortawesome/free-solid-svg-icons'
@@ -161,7 +161,8 @@ const GetSitterView = () => {
         
     }
 
-  return (
+    return (
+      <Suspense>
     <div>
           <NavBar />
           {/* <button
@@ -261,7 +262,8 @@ const GetSitterView = () => {
     <Footer/>
 
 
-    </div>
+            </div>
+            </Suspense>
   )
 }
 

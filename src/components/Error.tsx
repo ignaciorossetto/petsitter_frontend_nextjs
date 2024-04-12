@@ -3,7 +3,7 @@ import { faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import Swal from 'sweetalert2';
 
 const Error = () => {
@@ -75,7 +75,8 @@ const searchParams = useSearchParams();
     }, [errorCode])
 
 
-  return (
+    return (
+      <Suspense>
     <div className='w-full flex flex-col items-center justify-start min-h-[60vh]'>
         {loading ? <FontAwesomeIcon size='2xl' icon={faSpinner}  className='h-16 w-16 p-20' spin/> : <div className='text-2xl font-medium p-20'>{error}</div>}
         {(Number(code) === 3 && !loading) && 
@@ -95,7 +96,8 @@ const searchParams = useSearchParams();
         
         </>
         }
-    </div>
+            </div>
+            </Suspense>
   )
 }
 

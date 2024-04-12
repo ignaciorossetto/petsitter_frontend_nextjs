@@ -1,6 +1,6 @@
 "use client"
 import { UserContext } from '@/hooks/auth/authContext'
-import React, { SetStateAction, useContext, useEffect, useRef, useState } from 'react'
+import React, { SetStateAction, Suspense, useContext, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 // import socketio from "socket.io-client";
 
@@ -47,7 +47,7 @@ const Sitters = () => {
     // socket.current.emit('identity', sid)
   }, [])
   return (
-    <>
+    <Suspense>
         <h1 className='text-2xl p-10'>sitterID: {sitterId}</h1>
         <h1 className='text-2xl p-10'>ownerID: {ownerId}</h1>
         <input value={input} className='border-2 border-black p-2 m-5' onChange={(e:any)=> setInput(e.target.value)}type='text'/>
@@ -59,7 +59,7 @@ const Sitters = () => {
           )
         }
         </div>
-    </>
+    </Suspense>
   )
 }
 

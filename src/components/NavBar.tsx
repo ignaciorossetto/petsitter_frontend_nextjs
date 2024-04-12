@@ -13,7 +13,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, Suspense } from "react";
 import { UserContext, UserContextType } from "@/hooks/auth/authContext";
 import Image from "next/image";
 import Swal from "sweetalert2";
@@ -83,6 +83,7 @@ const NavBar = ({type}:NavBarPropType) => {
   }, [])
 
   return (
+    <Suspense>
     <nav className="z-10 shadow-2xl w-[100vh!] bg-white rounded-2xl  h-[8rem] flex justify-between items-center p-10 mb-5 sticky top-0">
       <div
         className="md:hidden cursor-pointer hover:scale-110"
@@ -267,7 +268,8 @@ const NavBar = ({type}:NavBarPropType) => {
           />
         </div>
       )}
-    </nav>
+      </nav>
+      </Suspense>
   );
 };
 
