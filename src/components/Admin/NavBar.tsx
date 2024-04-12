@@ -8,7 +8,6 @@ import {
     faDashboard,
   faPaw,
   faRightFromBracket,
-  faShop,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,6 +18,7 @@ import Image from "next/image";
 import Swal from "sweetalert2";
 import { getGoogleLoggedInUserInfo } from "@/utils/axiosRequests";
 import { AdminContext, AdminContextType } from "@/hooks/auth/adminContext";
+import LoadingPulsePaw from "../LoadingComponents/LoadingPulsePaw";
 
 const NavBar = () => {
   const searchParams = useSearchParams();
@@ -72,7 +72,7 @@ const NavBar = () => {
 
 
   return (
-    <Suspense>
+    <Suspense fallback={<LoadingPulsePaw />}>
     <nav className="z-10 shadow-2xl w-full bg-white rounded-2xl  h-[8rem] flex justify-between items-center p-10 mb-5 sticky top-0">
       <div
         className="sm:hidden cursor-pointer hover:scale-110"

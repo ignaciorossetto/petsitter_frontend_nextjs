@@ -1,8 +1,8 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faHome, faMailBulk, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faHome,  faSpinner } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 import Swal from "sweetalert2";
@@ -90,7 +90,6 @@ const Confirmation = () => {
     checkAccount();
   }, []);
   return (
-    <Suspense>
         <>
           <FontAwesomeIcon className={`${!loading && "hidden"} w-24 h-24`} icon={faSpinner} size="2xl" spin />
           <div className="p-10 text-2xl font-medium">
@@ -100,7 +99,6 @@ const Confirmation = () => {
           {(errorMsg ||reSendMailTick)  && <h3 className='p-2 text-center text-2xl font-semibold'>Ir a <Link href={'/'}><FontAwesomeIcon className='hover:scale-105 duration-200' icon={faHome}/></Link></h3>}
         </>
       
-    </Suspense>
   );
 };
 

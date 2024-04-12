@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { Suspense, useContext, useEffect, useRef, useState } from "react";
+import React, {  useContext, useEffect, useRef, useState } from "react";
 import Conversation from "./Conversation";
 import Message from "./Message";
 import { MessageType } from "@/types/types";
@@ -20,8 +20,6 @@ import {
 } from "@/utils/axiosRequests";
 import axios from "axios";
 import OrderModal from "./OrderModal";
-import Swal from "sweetalert2";
-import { json } from "stream/consumers";
 import { calculateAmountOfDays } from "@/utils/utilsFunctions";
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 import config from "@/utils/config";
@@ -283,7 +281,6 @@ const Messenger = ({ type = "user" }: { type: string }) => {
   }, [selectedConv]);
 
   return (
-    <Suspense>
     <section className="w-full h-[80vh] flex justify-center">
       <div
         className={`${
@@ -521,7 +518,6 @@ const Messenger = ({ type = "user" }: { type: string }) => {
       }
       </div>
       </section>
-      </Suspense>
   );
 };
 

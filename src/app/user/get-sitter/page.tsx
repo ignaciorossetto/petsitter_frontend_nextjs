@@ -1,17 +1,14 @@
 "use client"
 import Footer from '@/components/Footer'
 import NavBar from '@/components/NavBar'
-import React, { MouseEventHandler, Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { GoogleMap, MarkerF, useLoadScript } from '@react-google-maps/api'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner, faTruckMedical } from '@fortawesome/free-solid-svg-icons'
 import { UserContext } from '@/hooks/auth/authContext'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { createOrGetConversation, getSittersNearBy, updateCareOrder } from '@/utils/axiosRequests'
+import {  getSittersNearBy, updateCareOrder } from '@/utils/axiosRequests'
 import { GeoLocSittersInfoType } from '@/types/types'
 import MapSitterCard from '@/components/MapSitterCard'
 import MapSitterInfo from '@/components/MapSitterInfo'
-import axios from 'axios'
 import Swal from 'sweetalert2'
 import { haversine_distance } from '@/utils/utilsFunctions'
 import LoadingPulsePaw from '@/components/LoadingComponents/LoadingPulsePaw'
@@ -162,7 +159,6 @@ const GetSitterView = () => {
     }
 
     return (
-      <Suspense>
     <div>
           <NavBar />
           {/* <button
@@ -263,7 +259,6 @@ const GetSitterView = () => {
 
 
             </div>
-            </Suspense>
   )
 }
 
