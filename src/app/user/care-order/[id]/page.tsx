@@ -9,9 +9,11 @@ import { UserContext } from '@/hooks/auth/authContext'
 import { CareOrderStatus, ICareOrderModel, PetType  } from '@/types/types'
 import { deleteCareOrder, getPendingOngoingCareOrder, updateCareOrder } from '@/utils/axiosRequests'
 import { parseCareOrderBtnClass, parseCareOrderStatus } from '@/utils/utilsFunctions'
-import { faArrowLeftLong, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faClockFour } from '@fortawesome/free-regular-svg-icons'
+import { faArrowLeftLong, faClock, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import axios from 'axios'
+import { differenceInCalendarDays } from 'date-fns'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
 import React, { useContext, useEffect, useState } from 'react'
@@ -98,13 +100,14 @@ const CareOrderDashboardView = () => {
                                     <div>{id} </div>
                                       
                             </div>
-                                 
+                            {info?.status !== CareOrderStatus.CONFIRMED &&  
                                   <button
                                       onClick={handleDeleteCareOrder}
                                       className='self-center mr-5 bg-white/75 p-3 px-5 rounded-lg text-[35px] text-red-500 hover:scale-110 active:scale-100 duration-200 cursor-pointer'
                                   >
                                       <FontAwesomeIcon icon={faTrash}/>
                                   </button>
+                                  }
                       </div>
                       
                        
@@ -177,11 +180,43 @@ const CareOrderDashboardView = () => {
                                       >fin: <p
                                       className='text-[20px] font-bold'
                                           >{new Date(info?.dates[1]).toLocaleDateString()}</p></p>
+                                      {
+                                        info?.status === CareOrderStatus.NOT_CONFIRMED &&
                                       <button
                                       className='mt-3 text-[19px] p-2 bg-blue-400 text-white font-semibold rounded-xl hover:scale-105 active:scale-100 duration-200'
                                       >
                                           Modificar fechas
                                       </button>
+                                      }
+                                      {
+                                          info?.status === CareOrderStatus.CONFIRMED &&
+                                          <>
+                                           {
+                                                  differenceInCalendarDays(new Date(info?.dates[0]), new Date()) > 0 && 
+                                            <div
+                                            className='mt-3 text-[19px] p-2 bg-blue-400 text-white font-semibold rounded-xl hover:scale-105 active:scale-100 duration-200'
+                                            >
+                                                Faltan {differenceInCalendarDays(new Date(info?.dates[0]), new Date())} días...
+                                            </div>
+                                              }
+                                              {
+                                                  differenceInCalendarDays(new Date(info?.dates[0]), new Date()) < 0 && 
+                                                  <div
+                                            className='mt-3 text-[19px] p-2 bg-blue-400 text-white font-semibold rounded-xl hover:scale-105 active:scale-100 duration-200'
+                                            >
+                                                En {differenceInCalendarDays(new Date(info?.dates[0]), new Date())*-1 + 1} día/s términa el cuidado...
+                                            </div>
+                                            }  
+                                              {
+                                                  differenceInCalendarDays(new Date(info?.dates[0]), new Date()) === 0 && 
+                                                  <div
+                                            className='mt-3 text-[19px] p-2 bg-blue-400 text-white font-semibold rounded-xl hover:scale-105 active:scale-100 duration-200'
+                                            >
+                                                Hoy comienza el cuidado!! <span>&#129321;</span>...
+                                            </div>
+                                            }  
+                                          </>
+                                      }
                               </div>
                               <div
                                       className='text-[35px] w-[50%] flex flex-col gap-5 font-semibold p-10 shadow-2xl shadow-black/40 rounded-xl '
@@ -191,7 +226,8 @@ const CareOrderDashboardView = () => {
                                       className={`${parseCareOrderBtnClass(info?.status as CareOrderStatus)} text-[30px] p-3 `}
                                       >
                                       <span className={` w-fit p-2 rounded-lg mt-10`}>{parseCareOrderStatus(info?.status as CareOrderStatus)} </span>
-                                      {CareOrderStatus.CONFIRMED && <span>&#129395;</span> }
+                                      {info?.status === CareOrderStatus.CONFIRMED && <span>&#129395;</span> }
+                                      {info?.status === CareOrderStatus.NOT_CONFIRMED && <FontAwesomeIcon icon={faClockFour}/> }
                                           
                                       </div>
                                   </div>

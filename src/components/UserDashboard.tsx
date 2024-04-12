@@ -1,7 +1,7 @@
 "use client"
 import { UserContext, UserContextType } from '@/hooks/auth/authContext'
 import {  faUser } from '@fortawesome/free-regular-svg-icons'
-import {  faCalendarPlus, faHouse, faSpinner } from '@fortawesome/free-solid-svg-icons'
+import {  faCalendarPlus, faEye, faHouse, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Image from 'next/image'
 import React, { useContext, useEffect, useState } from 'react'
@@ -191,11 +191,29 @@ useEffect(()=> {
     <hr className="h-px my-8 bg-gray-200 border-1 dark:bg-gray-800"></hr>
     <div className='flex gap-5'>
         <FontAwesomeIcon icon={faCalendarPlus} className='h-[150px] w-[150px]'/>
-        <div className='flex flex-col gap-3 h-full items-start justify-center'>
-        <h1 className='text-xl font-semibold self-start'>Historial de cuidados</h1>
-        <p>15/8/2023 ---- Sitter: Juan Sklar ---- Rate: 4.4</p>
-        <p>12/5/2023 ---- Sitter: Juan Sklar ---- Rate: 4.4</p>
-        <p>07/01/2023 ---- Sitter: Juan Sklar ---- Rate: 4.4</p>
+        <div className='flex flex-col gap-3 h-full items-center justify-center'>
+          <h1 className='text-xl font-semibold self-start'>Historial de cuidados</h1>
+          {user?.careOrders?.map((e) => 
+            <div
+              key={e._id}
+              className='flex gap-5 items-center'
+            >
+              <span>
+                15/8/2023
+              </span>
+              <span>
+              Juan Sklar
+              </span>
+          
+              <button
+                  className='px-2 py-1 bg-blue-400 text-black rounded-xl hover:scale-105 active:scale-100 duration-200'
+                  >
+                    <FontAwesomeIcon icon={faEye} />
+                </button>
+              
+            </div>
+          )
+          }
         <button className='px-5 py-2
              bg-violet-300 hover:bg-violet-800 hover:scale-110 hover:text-white duration-200 font-medium w-fit rounded-2xl'>Ver todos</button>
         </div>

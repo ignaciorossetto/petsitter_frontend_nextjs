@@ -98,3 +98,11 @@ export const createGoogleMapsUrl = (lat: string, lng: string) => {
 
   return url;
 };
+
+export const calulateDiffBtwTwoDates = (startDate: any, endDate: any) => {
+  const differenceInMilliseconds = Math.abs(endDate - startDate);
+  const differenceInDays = Math.ceil(
+    differenceInMilliseconds / (1000 * 60 * 60 * 24)
+  );
+  return differenceInDays;
+};

@@ -103,20 +103,13 @@ const PetDashboard = () => {
             user?.careOrders?.length! > 0 && 
             user?.careOrders?.map((e:ICareOrderModel) => {
               if (e.status === CareOrderStatus.NOT_CONFIRMED || e.status === CareOrderStatus.CONFIRMED || e.status === CareOrderStatus.ON_GOING) {
-                console.log(parseCareOrderBtnClass(e?.status))
                 return <div
                   key={e._id}
                 onClick={()=>router.push(`/user/care-order/${e._id}`)}
-                className={`font-semibold text-lg text-white hover:scale-105 p-2 -mt-1 cursor-pointer text-center rounded-xl duration-150 bg-yellow-500 ${parseCareOrderBtnClass(e?.status as CareOrderStatus)} hover:bg-slate-500 animate-pulse`}>
+                className={`font-semibold text-lg text-white hover:scale-105 p-2 -mt-1 cursor-pointer text-center rounded-xl duration-150 ${parseCareOrderBtnClass(e?.status as CareOrderStatus)} hover:bg-slate-500 animate-pulse`}>
                       Orden: {parseCareOrderStatus(e.status)}
                 </div>
               }
-              else 
-                return <div
-                onClick={handleGetSitterBtn}
-                className="font-semibold text-lg text-white hover:scale-105 p-2 -mt-1 cursor-pointer text-center rounded-xl duration-150 bg-blue-500 hover:bg-slate-500">
-                      Historial de cuidados!
-                </div>
             })
           }
               </div>

@@ -4,13 +4,13 @@ import NavBar from '@/components/NavBar'
 import PetDashboard from '@/components/PetDashboard'
 import { UserContext, UserContextType } from '@/hooks/auth/authContext'
 import Link from 'next/link'
-import React, { Suspense, useContext } from 'react'
+import React, {  useContext } from 'react'
 
 const Pets = () => {
   const { user } = useContext<UserContextType>(UserContext) 
 
   return (
-    <Suspense>
+    <>
       <NavBar />
       {
         user && user.confirmedAccount && user.fullAddress?.address &&
@@ -70,7 +70,7 @@ const Pets = () => {
 
       }
         <Footer/>
-    </Suspense>
+    </>
   )
 }
 

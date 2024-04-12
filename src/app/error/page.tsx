@@ -1,17 +1,17 @@
 import Error from '@/components/Error'
 import Footer from '@/components/Footer'
 import NavBar from '@/components/NavBar'
-import React, { Suspense } from 'react'
+import React from 'react'
 
 
 const page = () => {
 
   return (
-    <Suspense>
+    <>
         <NavBar />   
         <Error/>
         <Footer />
-    </Suspense>
+    </>
   )
 }
 
