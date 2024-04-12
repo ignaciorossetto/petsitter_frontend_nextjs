@@ -16,7 +16,7 @@ import { Span } from 'next/dist/trace'
 import Link from 'next/link'
 
 
-const libraries = ['places'];
+const libraries: ("places" | "drawing" | "geometry" | "localContext" | "visualization")[] = ['places'];
 
 
 const CareOrderConfirmedOrder = ({
@@ -38,7 +38,7 @@ const CareOrderConfirmedOrder = ({
     const { user, setUser } = useContext(UserContext)
     const {isLoaded, loadError, url} = useLoadScript({
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
-        libraries: libraries as ("places" | "drawing" | "geometry" | "localContext" | "visualization")[],
+        libraries: libraries ,
     })
 
 

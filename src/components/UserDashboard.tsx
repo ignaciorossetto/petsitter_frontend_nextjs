@@ -6,15 +6,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Image from 'next/image'
 import React, { useContext, useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
-import {   useLoadScript } from "@react-google-maps/api";
+import {   GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { useForm } from 'react-hook-form';
 import AddressGoogleMapInput from './AddressGoogleMapInput'
 import { AddressType, ISitter, IUser, userTypeEnum } from '@/types/types'
 import useAuthRequest from '@/hooks/auth/useAuthRequest'
 import { useRouter } from 'next/navigation'
 import { newAddressRequest, newProfileImgRequest } from '@/utils/axiosRequests'
+import LoadingPulsePaw from './LoadingComponents/LoadingPulsePaw'
 
-
+const libraries: ("places" | "drawing" | "geometry" | "localContext" | "visualization")[] = ["places"]
 
 const UserDashboard = () => {
   const jwt = localStorage.getItem("psf-jwt");
@@ -29,7 +30,7 @@ const UserDashboard = () => {
   const [profileImg, setProfileImg] = useState(user?.profileImg)
   const {isLoaded} = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
-    libraries: ['places'],
+    libraries: libraries,
 })
 const router = useRouter()
 
@@ -154,8 +155,49 @@ useEffect(()=> {
             loadingNewAddress ? <FontAwesomeIcon icon={faSpinner} spin
             className='w-full text-center h-20'
             /> :
-         <>
-        <FontAwesomeIcon icon={faHouse} className='h-[150px] w-[150px]'/>
+            <>
+              {
+                isLoaded ?
+              
+              <div
+                className='relative w-[150px] h-[150px] border-4 border-violet-200 rounded-lg'
+              >
+                    <div
+                    className='absolute w-[150px] h-[150px] shadow-2xl animate-pulse -top-1 -left-1 shadow-violet-400 rounded-lg'
+                    />
+
+              <GoogleMap
+                mapContainerClassName='w-full h-full rounded-lg'
+                zoom={15}
+                center={{ lat: user?.fullAddress?.latLng.lat as number, lng: user?.fullAddress?.latLng.lng as number}}
+                options={{
+                    streetView: null,
+                    fullscreenControl: null,
+                    mapTypeControl: false,
+                    streetViewControl: false,
+                    scaleControlOptions: null,
+                    disableDoubleClickZoom: false,
+                    zoomControl: false,
+                    gestureHandling: "none",
+                    clickableIcons: false
+
+
+                                                
+                              }}     
+            >
+            <MarkerF
+                position={{ lat: user?.fullAddress?.latLng.lat as number, lng: user?.fullAddress?.latLng.lng as number}}
+                icon={{
+                    url: "/pawprint.png",
+                    
+                }}/>
+
+                </GoogleMap>
+                </div>
+                :
+                <LoadingPulsePaw />
+              }
+                
         <div className='flex flex-col gap-3'>
             {user?.fullAddress?.address ? 
             <h1 className='text-xl font-semibold'>{user?.fullAddress?.address}</h1>
@@ -193,25 +235,29 @@ useEffect(()=> {
         <FontAwesomeIcon icon={faCalendarPlus} className='h-[150px] w-[150px]'/>
         <div className='flex flex-col gap-3 h-full items-center justify-center'>
           <h1 className='text-xl font-semibold self-start'>Historial de cuidados</h1>
-          {user?.careOrders?.map((e) => 
+          {user?.careOrders?.map((e, index) => {
+            if (index > 2) {
+              return
+            }
+            return(
             <div
-              key={e._id}
-              className='flex gap-5 items-center'
+              key={e?._id}
+              className='flex justify-between gap-5 items-center w-[300px]'
             >
               <span>
-                15/8/2023
-              </span>
-              <span>
-              Juan Sklar
-              </span>
-          
+                {new Date(e?.dates[0]).toLocaleDateString()}
+                </span>  
+                <div
+                className='w-[100px] bg-black h-[2px]'
+                />  
               <button
                   className='px-2 py-1 bg-blue-400 text-black rounded-xl hover:scale-105 active:scale-100 duration-200'
                   >
-                    <FontAwesomeIcon icon={faEye} />
+                    <FontAwesomeIcon icon={faEye}/> ver..
                 </button>
-              
-            </div>
+                
+            </div>)}
+            
           )
           }
         <button className='px-5 py-2
